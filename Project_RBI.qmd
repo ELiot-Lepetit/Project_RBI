@@ -1,8 +1,38 @@
 ---
 title: "Project_RBI"
 author: "Aashish Sukhija & Eliot Lepetit"
-format: html
+format: 
+  html: default
+  pdf: default
 ---
 
 ## Import datasets
 
+```{r}
+#| message: false
+#| warning: false
+#| eval: false
+here::i_am("Project_RBI.Rproj")
+library(here)       
+library(readxl)     
+library(tidyr)  
+library(stringr)
+library(dplyr)
+library(vroom)
+library(ggplot2)
+theme_set(theme_bw())
+```
+```{r}
+Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 2)
+Birth_data<-read_excel(" State-wise Birth Rate.XLSX", skip = 2, sheet = 2)
+Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 2, )
+Death_data<-read_excel("State-wise Death Rate.XLSX", skip = 2, sheet = 2)
+Pop_data<-read_excel("State-wise Total Population.XLSX", skip = 2)
+IMR_data<-read_excel("State-wise Infant Mortality Rate.XLSX", skip = 2, sheet = 2)
+TFR_data<-read_excel("State-wise Total Fertility Rate.XLSX", skip = 1, sheet = 2)
+Life_data<-read_excel("State-wise Life Expectancy.XLSX", skip = 2, sheet = "T_14(vi)")
+Health_Exp_data<-read_excel("State-wise Public Expenditure on Health.XLSX", skip = 2)
+NSDP1_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 3)
+NSDP2_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 3)
+NSDP3_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 3)
+```
