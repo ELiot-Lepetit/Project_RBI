@@ -26,18 +26,55 @@ theme_set(theme_bw())
 
 ```{r}
 suppressMessages({
-Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 3)
-Birth_data<-read_excel("_State-wise Birth Rate.XLSX", skip = 3, sheet = 2)
-Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 3, )
-Death_data<-read_excel("State-wise Death Rate.XLSX", skip = 3, sheet = 2)
-Pop_data<-read_excel("State-wise Total Population.XLSX", skip = 3)
-IMR_data<-read_excel("State-wise Infant Mortality Rate.XLSX", skip = 2, sheet = 2)
-TFR_data<-read_excel("State-wise Total Fertility Rate.XLSX", skip = 2, sheet = 2)
-Life_data<-read_excel("State-wise Life Expectancy.XLSX", skip = 2, sheet = "T_14(vi)")
-Health_Exp_data<-read_excel("State-wise Public Expenditure on Health.XLSX", skip = 3)
-NSDP1_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 4)
-NSDP2_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 4)
-NSDP3_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 4)
+Literacy_data <- read_excel("State-wise Literacy Rate.XLSX", skip = 3)
+Birth_data <- read_excel("_State-wise Birth Rate.XLSX", skip = 3, sheet = 2)
+Sex_data <- read_excel("State-wise Sex Ratio.XLSX", skip = 3)
+Death_data <- read_excel("State-wise Death Rate.XLSX", skip = 3, sheet = 2)
+Pop_data <- read_excel("State-wise Total Population.XLSX", skip = 3)
+IMR_data <- read_excel("State-wise Infant Mortality Rate.XLSX", skip = 2, sheet = 2)
+TFR_data <- read_excel("State-wise Total Fertility Rate.XLSX", skip = 2, sheet = 2)
+Life_data <- read_excel("State-wise Life Expectancy.XLSX", skip = 2, sheet = "T_14(vi)")
+Health_Exp_data <- read_excel("State-wise Public Expenditure on Health.XLSX", skip = 3)
+NSDP1_data <- read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 4)
+NSDP2_data <- read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 4)
+NSDP3_data <- read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 4)
+
+#Create a directory to store CSV files
+if (!dir.exists(here("data"))) {
+  dir.create(here("data"))
+}
+
+#Save each dataset as a CSV file
+write.csv(Literacy_data, here("data", "State-wise_Literacy_Rate.csv"), row.names = FALSE)
+write.csv(Birth_data, here("data", "State-wise_Birth_Rate.csv"), row.names = FALSE)
+write.csv(Sex_data, here("data", "State-wise_Sex_Ratio.csv"), row.names = FALSE)
+write.csv(Death_data, here("data", "State-wise_Death_Rate.csv"), row.names = FALSE)
+write.csv(Pop_data, here("data", "State-wise_Total_Population.csv"), row.names = FALSE)
+write.csv(IMR_data, here("data", "State-wise_Infant_Mortality_Rate.csv"), row.names = FALSE)
+write.csv(TFR_data, here("data", "State-wise_Total_Fertility_Rate.csv"), row.names = FALSE)
+write.csv(Life_data, here("data", "State-wise_Life_Expectancy.csv"), row.names = FALSE)
+write.csv(Health_Exp_data, here("data", "State-wise_Public_Expenditure_on_Health.csv"), row.names = FALSE)
+write.csv(NSDP1_data, here("data", "Net_State_Domestic_Product_1.csv"), row.names = FALSE)
+write.csv(NSDP2_data, here("data", "Net_State_Domestic_Product_2.csv"), row.names = FALSE)
+write.csv(NSDP3_data, here("data", "Net_State_Domestic_Product_3.csv"), row.names = FALSE)
+})
+```
+
+We finally load the datasets in CSV format from the "data" directory we just created :
+```{r}
+suppressMessages({
+Literacy_data <- read.csv(here("data", "State-wise_Literacy_Rate.csv"))
+Birth_data <- read.csv(here("data", "State-wise_Birth_Rate.csv"))
+Sex_data <- read.csv(here("data", "State-wise_Sex_Ratio.csv"))
+Death_data <- read.csv(here("data", "State-wise_Death_Rate.csv"))
+Pop_data <- read.csv(here("data", "State-wise_Total_Population.csv"))
+IMR_data <- read.csv(here("data", "State-wise_Infant_Mortality_Rate.csv"))
+TFR_data <- read.csv(here("data", "State-wise_Total_Fertility_Rate.csv"))
+Life_data <- read.csv(here("data", "State-wise_Life_Expectancy.csv"))
+Health_Exp_data <- read.csv(here("data", "State-wise_Public_Expenditure_on_Health.csv"))
+NSDP1_data <- read.csv(here("data", "Net_State_Domestic_Product_1.csv"))
+NSDP2_data <- read.csv(here("data", "Net_State_Domestic_Product_2.csv"))
+NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 })
 ```
 
@@ -123,7 +160,8 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
 ```{r}
 #| message: false
 #| warning: false
-Birth_data <- Birth_data %>%  rename(State = `State/Union Territory`) %>%
+Birth_data <- Birth_data %>%  rename(State = State.Union.Territory ) %>%
+      rename_with(~ sub("^X", "", .)) %>%
     mutate(across(-State, as.numeric)) %>% 
     slice(-c(39, 40)) %>%
   mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
@@ -133,7 +171,8 @@ Birth_data <- Birth_data %>%  rename(State = `State/Union Territory`) %>%
 ```{r}
 #| message: false
 #| warning: false
-Death_data <- Death_data %>%  rename(State = `State/Union Territory`) %>%
+Death_data <- Death_data %>%  rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
     mutate(across(-State, as.numeric)) %>%
   slice(-c(39, 40)) %>%
    mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
@@ -143,18 +182,20 @@ Death_data <- Death_data %>%  rename(State = `State/Union Territory`) %>%
 ```{r}
 #| message: false
 #| warning: false
-Health_Exp_data <- Health_Exp_data %>%  rename(State = `State/Union Territory`) %>%
-  rename_with(~ sub("-.*", "", .)) %>%
-  mutate(across(-State, as.numeric)) %>%
-  mutate(across(where(is.numeric), ~ round(., 1))) %>%
-    slice(-c(37, 38))
+Health_Exp_data <- Health_Exp_data %>%
+  rename(State = `State.Union.Territory`) %>%                   
+  rename_with(~ gsub("^X|\\..*", "", .)) %>%                     
+  mutate(across(-State, as.numeric)) %>%                        
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%           
+  slice(-c(37, 38))                                             
 ```
 
 #### State-wise Literacy Rate
 ```{r}
 #| message: false
 #| warning: false
-Literacy_data <- Literacy_data %>% rename(State = `State/Union Territory`) %>%
+Literacy_data <- Literacy_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
   mutate(across(-State, as.numeric)) %>%
   mutate(across(where(is.numeric), ~ round(., 1))) %>%
   slice(-c(37:40))
@@ -164,7 +205,8 @@ Literacy_data <- Literacy_data %>% rename(State = `State/Union Territory`) %>%
 ```{r}
 #| message: false
 #| warning: false
-Pop_data <- Pop_data %>% rename(State = `State/Union Territory`) %>%
+Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
   slice(-c(37:43)) %>%
   mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
 ```
@@ -173,7 +215,8 @@ Pop_data <- Pop_data %>% rename(State = `State/Union Territory`) %>%
 ```{r}
 #| message: false
 #| warning: false
-Sex_data <- Sex_data %>% rename(State = `State/Union Territory`) %>%
+Sex_data <- Sex_data %>% rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
   slice(-c(37:39))  %>%
   mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
 ```
@@ -183,6 +226,7 @@ Sex_data <- Sex_data %>% rename(State = `State/Union Territory`) %>%
 #| message: false
 #| warning: false
 TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
+    rename_with(~ sub("^X", "", .)) %>%
     mutate(across(-State, as.numeric)) %>%
   slice(-c(24:26)) %>%
    mutate(across(where(is.numeric), ~ round(., 1)))
