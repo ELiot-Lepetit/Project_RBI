@@ -11,7 +11,6 @@ format:
 ```{r}
 #| message: false
 #| warning: false
-#| eval: false
 here::i_am("Project_RBI.Rproj")
 library(here)       
 library(readxl)     
@@ -20,9 +19,13 @@ library(stringr)
 library(dplyr)
 library(vroom)
 library(ggplot2)
+library(readxl)
+
 theme_set(theme_bw())
 ```
+
 ```{r}
+suppressMessages({
 Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 2)
 Birth_data<-read_excel("_State-wise Birth Rate.XLSX", skip = 2, sheet = 2)
 Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 2, )
@@ -32,7 +35,83 @@ IMR_data<-read_excel("State-wise Infant Mortality Rate.XLSX", skip = 2, sheet = 
 TFR_data<-read_excel("State-wise Total Fertility Rate.XLSX", skip = 1, sheet = 2)
 Life_data<-read_excel("State-wise Life Expectancy.XLSX", skip = 2, sheet = "T_14(vi)")
 Health_Exp_data<-read_excel("State-wise Public Expenditure on Health.XLSX", skip = 2)
-NSDP1_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 3)
-NSDP2_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 3)
-NSDP3_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 3)
+NSDP1_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 4)
+NSDP2_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 4)
+NSDP3_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 4)
+})
+```
+
+## Cleaning data
+
+### Merging and cleaning the NSDP datasets to have all states in one database
+
+```{r}
+#| message: false
+#| warning: false
+NSDP_merged <- NSDP1_data %>%
+  full_join(NSDP2_data, by = "Year") %>%
+  full_join(NSDP3_data, by = "Year")
+
+# Removing unused rows (we keep the data only for years after 2011)
+NSDP_merged <- NSDP_merged[c(53:65), ] 
+# Transforming missing values character as "NAs" and changing the dates format
+NSDP_merged <- NSDP_merged %>% mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
+  mutate(Year = as.numeric(sub("-.*", "", Year)))
+
+# We pivot the database to have a variable "State" in order to merge with other datasets
+NSDP_long <- NSDP_merged %>%
+  mutate(across(-Year, as.character)) %>%
+  pivot_longer(
+    cols = -Year,         
+    names_to = "State",    
+    values_to = "Value"     
+  ) 
+
+NSDP_clean <- NSDP_long %>%
+  pivot_wider(
+    names_from = Year,     
+    values_from = Value
+  )  %>%
+  mutate(across(-State, as.numeric))
+
+rm(NSDP1_data, NSDP2_data, NSDP3_data)
+
+```
+
+
+#### GGplot for the NSDP by state
+For visibility, we only display the first five states:  `r paste(NSDP_clean$State[1:5], collapse = ", ")`.
+```{r}
+#| message: false
+#| warning: false
+NSDP_plot <- NSDP_clean %>%
+  slice(1:5) %>%
+  pivot_longer(
+    cols = -State,          
+    names_to = "Year",       
+    values_to = "Value"
+  ) %>%
+    mutate(Year = as.numeric(Year))
+
+library(scales)
+ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
+  geom_line(size = 1) +                
+  labs(
+    title = "Trends in NSDP by State",
+    x = "Year",
+    y = "NSDP Value (in Crores)"
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, max(NSDP_plot$Value, na.rm = TRUE), by = 100000),  
+    labels = label_number(scale_cut = cut_short_scale())              
+  ) +
+  scale_x_continuous(
+    breaks = seq(min(NSDP_plot$Year, na.rm = TRUE), max(NSDP_plot$Year, na.rm = TRUE), by = 1) 
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    legend.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1), 
+    panel.grid.major.y = element_line(color = "gray", linetype = "dotted"))  
 ```
