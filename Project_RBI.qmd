@@ -285,4 +285,34 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
     panel.grid.major.y = element_line(color = "gray", linetype = "dotted"))  
 ```
 
-## Research Question 
+## Description of Research Question 
+- Research Question:- Investigating the Interplay Between Socio-Demographic Indicators and Net State Domestic Product (NSDP) Across Indian States
+
+- Why these Datasets:- 
+The relationship between socio-demographic indicators and economic performance is a critical lens for analyzing the complexities of regional development in a diverse country like India. This research seeks to investigate how socio-demographic factors, such as literacy rate, health expenditure, birth rate, and other indicators, interact with the Net State Domestic Product (NSDP) to shape the economic outcomes of Indian states. By linking NSDP, a measure of economic activity, with socio-demographic variables, we aim to uncover patterns, disparities, and trends that explain variations in development outcomes across states.
+
+The NSDP data provides detailed insights into the economic scale and sectoral contributions (e.g., agriculture, industry, and services) of each state. It reflects the capacity of states to generate economic value, adjusted for inflation, allowing for meaningful comparisons over time. On the other hand, socio-demographic indicators reveal the underlying health and human capital conditions that can either drive or hinder economic growth. Together, these datasets provide a robust foundation for a multi-dimensional analysis of regional disparities, enabling us to examine how social conditions influence economic outcomes and vice versa.
+
+- Objectives of the Research:-
+	1.	Understanding Regional Disparities:
+	•	Analyze differences in NSDP values across states and identify the factors contributing to these disparities.
+	•	Explore why some states (e.g., Maharashtra, Tamil Nadu) consistently outperform others (e.g., Bihar, Odisha) in terms of economic growth.
+	2.	Exploring the Role of Socio-Demographic Indicators:
+	•	Investigate the correlation between NSDP and socio-demographic variables like literacy rates, health expenditure, and birth/death rates.
+	•	Examine whether higher investments in human capital and health infrastructure translate to better economic performance.
+	3.	Analyzing Growth Trajectories:
+	•	Evaluate how NSDP and socio-demographic indicators have evolved over time, identifying trends and growth trajectories for individual states.
+	4.	Regional and Cultural Comparisons:
+	•	Group states by geographic regions (e.g., northern, southern, northeastern) to understand how shared cultural and geographical factors influence economic and social outcomes.
+	•	Assess whether regional similarities (e.g., among northeastern states) lead to comparable growth patterns in NSDP and socio-demographic indicators.
+	5.	Sectoral Contributions:
+	•	Identify the dominant sectors driving NSDP growth in each state and assess their relationship with social factors, such as literacy and population health. 
+	
+- Why this Research Questions:-
+
+India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. While high-performing states may benefit from robust health and education systems, underperforming states may struggle due to insufficient investments in human capital. By focusing on these dynamics, this research can provide insights into the structural differences that drive variations in state-level development.
+
+And, also understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, states in the northeast may face challenges due to geographic isolation, while southern states may excel due to better health and education policies.
+
+- Conclusion:-
+This project has the potential to serve as a valuable resource for understanding the factors shaping economic performance in developing nations, offering lessons for addressing disparities and fostering equitable development. By linking social and economic datasets, this study not only explains past growth patterns but also informs future strategies for sustainable development. 
