@@ -4,6 +4,9 @@ author: "Aashish Sukhija & Eliot Lepetit"
 format: 
   html: default
   pdf: default
+editor: 
+  markdown: 
+    wrap: sentence
 ---
 
 ## Import datasets
@@ -18,9 +21,9 @@ library(tidyr)
 library(stringr)
 library(dplyr)
 library(vroom)
+library(readr)
+library(knitr)
 library(ggplot2)
-library(readxl)
-
 theme_set(theme_bw())
 ```
 
@@ -41,7 +44,171 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 })
 ```
 
+## Description of the datasets
+
+We now describes the data files used in this analysis, their sources, and the processing steps.
+
+-   GitHub Project Link to clone is :- https://github.com/ELiot-Lepetit/Project_RBI.git
+
+-   Data Sources;
+
+1.  Social and Demographic Indicators \~ https://www.rbi.org.in/Scripts/AnnualPublications.aspx?h
+    ead=Handbook+of+Statistics+on+Indian+States
+
+2.  Net State Domestic Product - State-wise (At Constant Prices) \~ https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
+    d=22480
+
+Instruction to reproduce the data selection; (i) Click on the above links to reach the official website of India's Central Bank which provides the "Database on Indian Economy" and Net State Domestic Product state wise for secondary research.
+(ii) Select the Social-demographic indicators for year 2022-23; Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate etc. (iii) Download the respective files as excel from both the links.
+(iv) Convert the excel files in csv for better data analysis of large dataset and easy to track changes in Github.
+(v) Note: We have already provided a zip file named as data.zip in our github project which contains all the csv files.
+
+-   A short description;
+
+The data for this project is derived from resources published by the Reserve Bank of India (RBI), specifically curated to provide insights into the economic and socio-demographic profiles of 28 states and 8 Union territories in the country.
+These datasets serve as reliable and authoritative references for our research intent to analyze regional economic growth and its correlation with socio-demographic indicators.
+
+1.  Net State Domestic Product (NSDP) - State-wise (At Constant Prices)
+
+The Net State Domestic Product (NSDP) data is sourced from the RBI’s State-wise Economic Indicators.
+This dataset provides state-wise estimates of NSDP at constant prices, reflecting the total economic output of each state after accounting for depreciation (consumption of fixed capital).
+NSDP is a crucial metric for assessing the economic performance of individual states, as it indicates the value of goods and services produced within a state’s geographical boundaries during a given period.
+
+We eliminate the impact of inflation through using constant prices, allowing for meaningful comparisons of economic growth over time and across states.
+This dataset is organized by fiscal years and further disaggregated into sectoral contributions, including agriculture, industry, and services.
+It will help us as potential researchers to identify the dominant economic activities in each state and evaluate trends in economic growth.
+
+The NSDP data is particularly valuable for understanding regional disparities, exploring growth trajectories, and assessing the impact of policy interventions.
+By focusing on state-level economic activity, this resource provides insights into the structural differences that drive variations in development outcomes across India.
+
+2.  Socio-Economic Indicators
+
+The socio-economic data is obtained from the Handbook of Statistics on Indian States for year 2022-2023, an annual publication by the Reserve Bank of India.
+This dataset offers a comprehensive overview of the demographic, health, and social characteristics of Indian states, which are essential for understanding the human development aspects of economic growth.
+The key indicators included are: • State-wise Literacy Rate: Proportion of the population aged seven and above who can read and write with understanding.
+• State-wise Birth Rate: Number of live births per thousand people annually.
+• State-wise Death Rate: Number of deaths per thousand people annually.
+• State-wise Sex Ratio: Number of females per thousand males.
+• State-wise Total Population: Total population of each state based on census and projections.
+• State-wise Infant Mortality Rate (IMR): Number of infant deaths (under one year of age) per thousand live births.
+• State-wise Total Fertility Rate (TFR): Average number of children a woman is expected to have during her lifetime.
+• State-wise Life Expectancy: Average number of years a person is expected to live at birth.
+• State-wise Public Expenditure on Health: State-level spending on public healthcare infrastructure and services.
+
+These indicators provide a socio-demographic lens for evaluating the quality of life and human development across states.
+The data enables an exploration of how socio-economic factors, such as education, health, and fertility, interact with economic growth, helping to explain variations in Net State Domestic Product.
+We hope to take it a step forward by comparing states who are at the forefront and compare their Net State Domestic product.
+We also hope to compare states by the geographical region they occupy in the country and try to find if they share the similar growth in NSDP over the years.
+
+Integration and Use in Analysis
+
+Both datasets complement each other by linking economic performance (NSDP) with socio-demographic factors.
+While the NSDP data offers insights into the scale and composition of economic activity, the socio-economic indicators reveal the underlying human capital and health factors influencing economic growth.
+Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
+
+These datasets are well-structured, publicly available, and authoritative, making them ideal for analyzing the interplay between economic performance and human development across Indian states along with the adversities.
+
+-   Research question outlines and provides an initial visualization of the target variable.
+
+## Basic Information about the datasets
+The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests. The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data w.r.t the indicators and Net State Domestic Product by year.
+```{r}
+  data_info <- tibble(
+  Datasets = c("Literacy_data", "Birth_data", "Sex_data", "Death_data", "Pop_data", 
+           "IMR_data", "Life_data", "Health_Exp_data", "NSDP1_data", "NSDP2_data", "NSDP3_data"),
+  Rows = c(nrow(Literacy_data), nrow(Birth_data), nrow(Sex_data), nrow(Death_data), nrow(Pop_data), 
+           nrow(IMR_data), nrow(Life_data), nrow(Health_Exp_data), nrow(NSDP1_data), nrow(NSDP2_data), nrow(NSDP3_data)),
+  Columns = c(ncol(Literacy_data), ncol(Birth_data), ncol(Sex_data), ncol(Death_data), ncol(Pop_data), 
+              ncol(IMR_data), ncol(Life_data), ncol(Health_Exp_data), ncol(NSDP1_data), ncol(NSDP2_data), ncol(NSDP3_data)) )
+  data_info
+```
+
 ## Cleaning data
+
+### Cleaning Social and Demographic Indicators datasets to prepare for merging with Net State Domestic Product Dataset
+
+#### State-wise Birth Rate
+
+```{r}
+#| message: false
+#| warning: false
+Birth_data <- Birth_data %>%  rename(State = State.Union.Territory ) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>% 
+    slice(-c(39, 40)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
+```
+
+#### State-wise Death Rate
+
+```{r}
+#| message: false
+#| warning: false
+Death_data <- Death_data %>%  rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(39, 40)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
+```
+
+#### State-wise Public Expenditure on Health
+
+```{r}
+#| message: false
+#| warning: false
+Health_Exp_data <- Health_Exp_data %>%
+  rename(State = `State.Union.Territory`) %>%                   
+  rename_with(~ gsub("^X|\\..*", "", .)) %>%                     
+  mutate(across(-State, as.numeric)) %>%                        
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%           
+  slice(-c(37, 38))                                             
+```
+
+#### State-wise Literacy Rate
+
+```{r}
+#| message: false
+#| warning: false
+Literacy_data <- Literacy_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
+  mutate(across(-State, as.numeric)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%
+  slice(-c(37:40))
+```
+
+#### State-wise Total population
+
+```{r}
+#| message: false
+#| warning: false
+Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
+  slice(-c(37:43)) %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+```
+
+#### State-wise Sex Ratio (Females per Thousand Males)
+
+```{r}
+#| message: false
+#| warning: false
+Sex_data <- Sex_data %>% rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+  slice(-c(37:39))  %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+```
+
+#### State-wise Total Fertility Rate (number of children that would be born per woman, assuming no female mortality at childbearing age during the reference period)
+
+```{r}
+#| message: false
+#| warning: false
+TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
+    rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(24:26)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1)))
+```
 
 ### Merging and cleaning the NSDP datasets to have all states in one database
 
@@ -78,9 +245,10 @@ rm(NSDP1_data, NSDP2_data, NSDP3_data)
 
 ```
 
-
 #### GGplot for the NSDP by state
-For visibility, we only display the first five states:  `r paste(NSDP_clean$State[1:5], collapse = ", ")`.
+
+For visibility, we only display the first five states: `r paste(NSDP_clean$State[1:5], collapse = ", ")`.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -114,83 +282,4 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
     legend.title = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1), 
     panel.grid.major.y = element_line(color = "gray", linetype = "dotted"))  
-```
-
-
-### Cleaning the other datasets to prepare the merging
-
-#### State-wise Birth Rate
-```{r}
-#| message: false
-#| warning: false
-Birth_data <- Birth_data %>%  rename(State = State.Union.Territory ) %>%
-      rename_with(~ sub("^X", "", .)) %>%
-    mutate(across(-State, as.numeric)) %>% 
-    slice(-c(39, 40)) %>%
-  mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
-```
-
-#### State-wise Death Rate
-```{r}
-#| message: false
-#| warning: false
-Death_data <- Death_data %>%  rename(State = `State.Union.Territory`) %>%
-      rename_with(~ sub("^X", "", .)) %>%
-    mutate(across(-State, as.numeric)) %>%
-  slice(-c(39, 40)) %>%
-   mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
-```
-
-#### State-wise Public Expenditure on Health
-```{r}
-#| message: false
-#| warning: false
-Health_Exp_data <- Health_Exp_data %>%
-  rename(State = `State.Union.Territory`) %>%                   
-  rename_with(~ gsub("^X|\\..*", "", .)) %>%                     
-  mutate(across(-State, as.numeric)) %>%                        
-  mutate(across(where(is.numeric), ~ round(., 1))) %>%           
-  slice(-c(37, 38))                                             
-```
-
-#### State-wise Literacy Rate
-```{r}
-#| message: false
-#| warning: false
-Literacy_data <- Literacy_data %>% rename(State = `State.Union.Territory`) %>%
-        rename_with(~ sub("^X", "", .)) %>%
-  mutate(across(-State, as.numeric)) %>%
-  mutate(across(where(is.numeric), ~ round(., 1))) %>%
-  slice(-c(37:40))
-```
-
-#### State-wise Total population
-```{r}
-#| message: false
-#| warning: false
-Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
-        rename_with(~ sub("^X", "", .)) %>%
-  slice(-c(37:43)) %>%
-  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
-```
-
-#### State-wise Sex Ratio (Females per Thousand Males)
-```{r}
-#| message: false
-#| warning: false
-Sex_data <- Sex_data %>% rename(State = `State.Union.Territory`) %>%
-      rename_with(~ sub("^X", "", .)) %>%
-  slice(-c(37:39))  %>%
-  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
-```
-
-#### State-wise Total Fertility Rate (number of children that would be born per woman, assuming no female mortality at childbearing age during the reference period)
-```{r}
-#| message: false
-#| warning: false
-TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
-    rename_with(~ sub("^X", "", .)) %>%
-    mutate(across(-State, as.numeric)) %>%
-  slice(-c(24:26)) %>%
-   mutate(across(where(is.numeric), ~ round(., 1)))
 ```
