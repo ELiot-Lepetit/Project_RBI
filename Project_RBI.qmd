@@ -26,15 +26,15 @@ theme_set(theme_bw())
 
 ```{r}
 suppressMessages({
-Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 2)
-Birth_data<-read_excel("_State-wise Birth Rate.XLSX", skip = 2, sheet = 2)
-Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 2, )
-Death_data<-read_excel("State-wise Death Rate.XLSX", skip = 2, sheet = 2)
-Pop_data<-read_excel("State-wise Total Population.XLSX", skip = 2)
+Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 3)
+Birth_data<-read_excel("_State-wise Birth Rate.XLSX", skip = 3, sheet = 2)
+Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 3, )
+Death_data<-read_excel("State-wise Death Rate.XLSX", skip = 3, sheet = 2)
+Pop_data<-read_excel("State-wise Total Population.XLSX", skip = 3)
 IMR_data<-read_excel("State-wise Infant Mortality Rate.XLSX", skip = 2, sheet = 2)
-TFR_data<-read_excel("State-wise Total Fertility Rate.XLSX", skip = 1, sheet = 2)
+TFR_data<-read_excel("State-wise Total Fertility Rate.XLSX", skip = 2, sheet = 2)
 Life_data<-read_excel("State-wise Life Expectancy.XLSX", skip = 2, sheet = "T_14(vi)")
-Health_Exp_data<-read_excel("State-wise Public Expenditure on Health.XLSX", skip = 2)
+Health_Exp_data<-read_excel("State-wise Public Expenditure on Health.XLSX", skip = 3)
 NSDP1_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 1, skip = 4)
 NSDP2_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 2, skip = 4)
 NSDP3_data<-read_excel("Net State Domestic Product (At Constant Prices).XLSX", sheet = 3, skip = 4)
@@ -118,9 +118,72 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
 
 
 ### Cleaning the other datasets to prepare the merging
-```{r}
 
+#### State-wise Birth Rate
+```{r}
+#| message: false
+#| warning: false
+Birth_data <- Birth_data %>%  rename(State = `State/Union Territory`) %>%
+    mutate(across(-State, as.numeric)) %>% 
+    slice(-c(39, 40)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
 ```
 
+#### State-wise Death Rate
+```{r}
+#| message: false
+#| warning: false
+Death_data <- Death_data %>%  rename(State = `State/Union Territory`) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(39, 40)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
+```
 
+#### State-wise Public Expenditure on Health
+```{r}
+#| message: false
+#| warning: false
+Health_Exp_data <- Health_Exp_data %>%  rename(State = `State/Union Territory`) %>%
+  rename_with(~ sub("-.*", "", .)) %>%
+  mutate(across(-State, as.numeric)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%
+    slice(-c(37, 38))
+```
 
+#### State-wise Literacy Rate
+```{r}
+#| message: false
+#| warning: false
+Literacy_data <- Literacy_data %>% rename(State = `State/Union Territory`) %>%
+  mutate(across(-State, as.numeric)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%
+  slice(-c(37:40))
+```
+
+#### State-wise Total population
+```{r}
+#| message: false
+#| warning: false
+Pop_data <- Pop_data %>% rename(State = `State/Union Territory`) %>%
+  slice(-c(37:43)) %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+```
+
+#### State-wise Sex Ratio (Females per Thousand Males)
+```{r}
+#| message: false
+#| warning: false
+Sex_data <- Sex_data %>% rename(State = `State/Union Territory`) %>%
+  slice(-c(37:39))  %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+```
+
+#### State-wise Total Fertility Rate (number of children that would be born per woman, assuming no female mortality at childbearing age during the reference period)
+```{r}
+#| message: false
+#| warning: false
+TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(24:26)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1)))
+```
