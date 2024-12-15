@@ -48,9 +48,9 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 
 We now describes the data files used in this analysis, their sources, and the processing steps.
 
--   GitHub Project Link to clone is :- https://github.com/ELiot-Lepetit/Project_RBI.git
+-   GitHub Project Link to clone is : https://github.com/ELiot-Lepetit/Project_RBI.git
 
--   Data Sources;
+-   Data Sources: 
 
 1.  Social and Demographic Indicators ~ https://www.rbi.org.in/Scripts/AnnualPublications.aspx?h
     ead=Handbook+of+Statistics+on+Indian+States
@@ -64,7 +64,7 @@ Instruction to reproduce the data selection; (i) Click on the above links to rea
 (iv) Convert the excel files in csv for better data analysis of large dataset and easy to track changes in Github.
 (v) Note: We have already provided a zip file named as data.zip in our github project which contains all the csv files.
 
--   A short description;
+-   A short description:
 
 The data for this project is derived from resources published by the Reserve Bank of India (RBI), specifically curated to provide insights into the economic and socio-demographic profiles of 28 states and 8 Union territories in the country.
 These datasets serve as reliable and authoritative references for our research intent to analyze regional economic growth and its correlation with socio-demographic indicators.
@@ -102,7 +102,7 @@ It will help us as potential researchers to identify the dominant economic activ
 The NSDP data is particularly valuable for understanding regional disparities, exploring growth trajectories, and assessing the impact of policy interventions.
 By focusing on state-level economic activity, this resource provides insights into the structural differences that drive variations in development outcomes across India.
 
-Integration and Use in Analysis
+**Integration and Use in Analysis**
 
 Both datasets complement each other by linking economic performance (NSDP) with socio-demographic factors.
 While the NSDP data offers insights into the scale and composition of economic activity, the socio-demographic indicators reveal the underlying human capital and health factors influencing economic growth. Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
@@ -125,6 +125,7 @@ The Datasets table represents the 11 raw data sets before the cleaning and mergi
 ```
 
 ## Cleaning data
+In this part we removed the unused extra rows which came from the conversion from excel files to csv files. We also ensured to standardize the format of each database to facilitate merging.
 
 ### Cleaning Social and Demographic Indicators datasets to prepare for merging with Net State Domestic Product Dataset
 
@@ -212,6 +213,7 @@ TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
 ```
 
 ### Merging and cleaning the NSDP datasets to have all states in one database
+The excel file contained 3 sheets which we will be merging and then pivoting to have one observation for each state (stored in a varibale named "State").
 
 ```{r}
 #| message: false
@@ -246,7 +248,7 @@ rm(NSDP1_data, NSDP2_data, NSDP3_data)
 
 ```
 
-#### GGplot for the NSDP by state
+#### Graphical representation of the NSDP (per state) variable.
 
 For visibility, we only display the first five states: `r paste(NSDP_clean$State[1:5], collapse = ", ")`.
 
