@@ -24,7 +24,7 @@ theme_set(theme_bw())
 ```
 ```{r}
 Literacy_data<-read_excel("State-wise Literacy Rate.XLSX", skip = 2)
-Birth_data<-read_excel(" State-wise Birth Rate.XLSX", skip = 2, sheet = 2)
+Birth_data<-read_excel("_State-wise Birth Rate.XLSX", skip = 2, sheet = 2)
 Sex_data<-read_excel("State-wise Sex Ratio.XLSX", skip = 2, )
 Death_data<-read_excel("State-wise Death Rate.XLSX", skip = 2, sheet = 2)
 Pop_data<-read_excel("State-wise Total Population.XLSX", skip = 2)
