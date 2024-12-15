@@ -52,14 +52,15 @@ We now describes the data files used in this analysis, their sources, and the pr
 
 -   Data Sources;
 
-1.  Social and Demographic Indicators \~ https://www.rbi.org.in/Scripts/AnnualPublications.aspx?h
+1.  Social and Demographic Indicators ~ https://www.rbi.org.in/Scripts/AnnualPublications.aspx?h
     ead=Handbook+of+Statistics+on+Indian+States
 
-2.  Net State Domestic Product - State-wise (At Constant Prices) \~ https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
+2.  Net State Domestic Product - State-wise (At Constant Prices) ~ https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
     d=22480
 
 Instruction to reproduce the data selection; (i) Click on the above links to reach the official website of India's Central Bank which provides the "Database on Indian Economy" and Net State Domestic Product state wise for secondary research.
-(ii) Select the Social-demographic indicators for year 2022-23; Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate etc. (iii) Download the respective files as excel from both the links.
+(ii) Select the Social-demographic indicators for year 2022-23; Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate etc. 
+(iii) Download the respective files as excel from both the links.
 (iv) Convert the excel files in csv for better data analysis of large dataset and easy to track changes in Github.
 (v) Note: We have already provided a zip file named as data.zip in our github project which contains all the csv files.
 
@@ -68,24 +69,12 @@ Instruction to reproduce the data selection; (i) Click on the above links to rea
 The data for this project is derived from resources published by the Reserve Bank of India (RBI), specifically curated to provide insights into the economic and socio-demographic profiles of 28 states and 8 Union territories in the country.
 These datasets serve as reliable and authoritative references for our research intent to analyze regional economic growth and its correlation with socio-demographic indicators.
 
-1.  Net State Domestic Product (NSDP) - State-wise (At Constant Prices)
+1.  Socio-Demographic Indicators
 
-The Net State Domestic Product (NSDP) data is sourced from the RBI’s State-wise Economic Indicators.
-This dataset provides state-wise estimates of NSDP at constant prices, reflecting the total economic output of each state after accounting for depreciation (consumption of fixed capital).
-NSDP is a crucial metric for assessing the economic performance of individual states, as it indicates the value of goods and services produced within a state’s geographical boundaries during a given period.
-
-We eliminate the impact of inflation through using constant prices, allowing for meaningful comparisons of economic growth over time and across states.
-This dataset is organized by fiscal years and further disaggregated into sectoral contributions, including agriculture, industry, and services.
-It will help us as potential researchers to identify the dominant economic activities in each state and evaluate trends in economic growth.
-
-The NSDP data is particularly valuable for understanding regional disparities, exploring growth trajectories, and assessing the impact of policy interventions.
-By focusing on state-level economic activity, this resource provides insights into the structural differences that drive variations in development outcomes across India.
-
-2.  Socio-Economic Indicators
-
-The socio-economic data is obtained from the Handbook of Statistics on Indian States for year 2022-2023, an annual publication by the Reserve Bank of India.
+The socio-demographic data is obtained from the Handbook of Statistics on Indian States for year 2022-2023, an annual publication by the Reserve Bank of India.
 This dataset offers a comprehensive overview of the demographic, health, and social characteristics of Indian states, which are essential for understanding the human development aspects of economic growth.
-The key indicators included are: • State-wise Literacy Rate: Proportion of the population aged seven and above who can read and write with understanding.
+The key indicators included are:
+• State-wise Literacy Rate: Proportion of the population aged seven and above who can read and write with understanding.
 • State-wise Birth Rate: Number of live births per thousand people annually.
 • State-wise Death Rate: Number of deaths per thousand people annually.
 • State-wise Sex Ratio: Number of females per thousand males.
@@ -100,18 +89,30 @@ The data enables an exploration of how socio-economic factors, such as education
 We hope to take it a step forward by comparing states who are at the forefront and compare their Net State Domestic product.
 We also hope to compare states by the geographical region they occupy in the country and try to find if they share the similar growth in NSDP over the years.
 
+2.  Net State Domestic Product (NSDP) - State-wise (At Constant Prices)
+
+The Net State Domestic Product (NSDP) data is sourced from the RBI’s State-wise Economic Indicators.
+This dataset provides state-wise estimates of NSDP at constant prices, reflecting the total economic output of each state after accounting for depreciation (consumption of fixed capital).
+NSDP is a crucial metric for assessing the economic performance of individual states, as it indicates the value of goods and services produced within a state’s geographical boundaries during a given period.
+
+We eliminate the impact of inflation through using constant prices, allowing for meaningful comparisons of economic growth over time and across states.
+This dataset is organized by fiscal years and further disaggregated into sectoral contributions, including agriculture, industry, and services.
+It will help us as potential researchers to identify the dominant economic activities in each state and evaluate trends in economic growth.
+
+The NSDP data is particularly valuable for understanding regional disparities, exploring growth trajectories, and assessing the impact of policy interventions.
+By focusing on state-level economic activity, this resource provides insights into the structural differences that drive variations in development outcomes across India.
+
 Integration and Use in Analysis
 
 Both datasets complement each other by linking economic performance (NSDP) with socio-demographic factors.
-While the NSDP data offers insights into the scale and composition of economic activity, the socio-economic indicators reveal the underlying human capital and health factors influencing economic growth.
-Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
+While the NSDP data offers insights into the scale and composition of economic activity, the socio-demographic indicators reveal the underlying human capital and health factors influencing economic growth. Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
 
 These datasets are well-structured, publicly available, and authoritative, making them ideal for analyzing the interplay between economic performance and human development across Indian states along with the adversities.
 
--   Research question outlines and provides an initial visualization of the target variable.
-
 ## Basic Information about the datasets
+
 The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests. The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data w.r.t the indicators and Net State Domestic Product by year.
+
 ```{r}
   data_info <- tibble(
   Datasets = c("Literacy_data", "Birth_data", "Sex_data", "Death_data", "Pop_data", 
@@ -283,3 +284,5 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
     axis.text.x = element_text(angle = 45, hjust = 1), 
     panel.grid.major.y = element_line(color = "gray", linetype = "dotted"))  
 ```
+
+## Research Question 
