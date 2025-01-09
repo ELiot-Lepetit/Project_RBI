@@ -24,6 +24,8 @@ library(vroom)
 library(readr)
 library(knitr)
 library(ggplot2)
+library(janitor)
+library(purrr)
 theme_set(theme_bw())
 ```
 
@@ -182,7 +184,7 @@ Health_Exp_data <- Health_Exp_data %>%
   slice(-c(37, 38))                                             
 ```
 
-#### State-wise Literacy Rate
+#### State-wise Literacy Rate 
 
 ```{r}
 #| message: false
@@ -205,7 +207,7 @@ Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
   mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
 ```
 
-#### State-wise Sex Ratio (Females per Thousand Males)
+#### State-wise Sex Ratio 
 
 ```{r}
 #| message: false
@@ -213,10 +215,11 @@ Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
 Sex_data <- Sex_data %>% rename(State = `State.Union.Territory`) %>%
       rename_with(~ sub("^X", "", .)) %>%
   slice(-c(37:39))  %>%
-  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
+  select(-`1951`)  
 ```
 
-#### State-wise Total Fertility Rate (number of children that would be born per woman, assuming no female mortality at childbearing age during the reference period)
+#### State-wise Total Fertility Rate
 
 ```{r}
 #| message: false
@@ -227,6 +230,18 @@ TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
   slice(-c(24:26)) %>%
    mutate(across(where(is.numeric), ~ round(., 1)))
 ```
+
+#### Infant mortality Rate 
+```{r}
+#| message: false
+#| warning: false
+IMR_data <- IMR_data %>%
+  row_to_names(row_number = 1) %>%
+  slice(-c(38:41)) %>%
+  rename(State = `State/Union Territory`) %>%
+  mutate(across(-State, ~ as.numeric(gsub("\\*", "", .))))
+```
+
 
 ### Merging and cleaning the NSDP datasets to have all states in one database
 The excel file contained 3 sheets which we will be merging and then pivoting to have one observation for each state (stored in a varibale named "State").
@@ -240,8 +255,10 @@ NSDP_merged <- NSDP1_data %>%
 
 # Removing unused rows (we keep the data only for years after 2011)
 NSDP_merged <- NSDP_merged[c(11:16, 25:29, 38:44, 53:65), ] 
+
 # Transforming missing values character as "NAs" and changing the dates format
-NSDP_merged <- NSDP_merged %>% mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
+NSDP_merged <- NSDP_merged %>% 
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
   mutate(Year = as.numeric(sub("-.*", "", Year)))
 
 # We pivot the database to have a variable "State" in order to merge with other datasets
@@ -253,12 +270,22 @@ NSDP_long <- NSDP_merged %>%
     values_to = "Value"     
   ) 
 
+# Clean and arrange the State variable in alphabetical order and replace specific names
 NSDP_clean <- NSDP_long %>%
   pivot_wider(
     names_from = Year,     
     values_from = Value
   )  %>%
-  mutate(across(-State, as.numeric))
+  mutate(across(-State, as.numeric)) %>%
+  mutate(
+    State = gsub("\\.+", " ", State),                        # Replace "." with " "
+    State = case_when(
+      State == "Andaman Nicobar Islands" ~ "Andaman & Nicobar Islands", # Fix specific name
+      State == "Jammu Kashmir" ~ "Jammu & Kashmir",                     # Fix Jammu Kashmir
+      TRUE ~ State                                                    # Keep other names as is
+    )
+  ) %>%
+  arrange(State)  # Sort by State in alphabetical order
 
 rm(NSDP1_data, NSDP2_data, NSDP3_data)
 
@@ -284,7 +311,7 @@ library(scales)
 ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
   geom_line(size = 1) +                
   labs(
-    title = "Trends in NSDP by State",
+    title = "Trends in NSDP by State/Union Territory",
     x = "Year",
     y = "NSDP Value (in Crores)"
   ) +
@@ -334,3 +361,57 @@ And, also understanding the impact of cultural and geographic differences adds a
 
 - Conclusion:-
 This project has the potential to serve as a valuable resource for understanding the factors shaping economic performance in developing nations, offering lessons for addressing disparities and fostering equitable development. By linking social and economic datasets, this study not only explains past growth patterns but also informs future strategies for sustainable development. 
+
+
+
+## Merging datasets 
+```{r}
+datasets <- list(
+  Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, Health_Exp_data, NSDP_clean, TFR_data, IMR_data, Literacy_data
+)
+
+# Names of the datasets
+dataset_names <- c(
+  "Literacy Rate", "Birth Rate", "Sex Ratio", "Death Rate", "Population", "Health Expenditure", 
+  "NSDP", "Total Fertility Rate", "Infant Mortality Rate", "Literacy"
+)
+
+# Preprocessing function
+preprocess_dataset <- function(data) {
+  data %>%
+    {if (any(grepl("State", colnames(.)))) rename(., State = starts_with("State")) else .} %>% # Rename State if it exists
+    rename_with(~ gsub("^X", "", .), -State) %>%    # Remove "X" prefix from year columns
+    {if ("1951" %in% colnames(.)) select(., -`1951`) else .} %>% # Remove "1951" if it exists
+    mutate(across(-State, as.character))           # Ensure all year columns are character
+}
+
+# Apply preprocessing to all datasets
+datasets <- map(datasets, preprocess_dataset)
+
+# Convert each dataset to long format
+long_datasets <- map2(datasets, dataset_names, function(data, name) {
+  data %>%
+    pivot_longer(
+      cols = -State,                # Keep "State" column
+      names_to = "Year",            # Create "Year" column from column names
+      values_to = name              # Use dataset name as the value column
+    ) %>%
+    mutate(Year = as.numeric(Year)) # Convert Year column back to numeric
+})
+
+# Merge all long-format datasets by "State" and "Year"
+merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
+```
+
+### 2019 Analysis
+```{r}
+merged_data_2019 <- merged_data %>%
+  filter(Year == 2019) %>%
+  filter(!is.na(NSDP)) #We remove the NAs for NSDP
+```
+
+
+
+
+
+
