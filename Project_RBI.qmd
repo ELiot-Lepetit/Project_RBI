@@ -24,6 +24,8 @@ library(vroom)
 library(readr)
 library(knitr)
 library(ggplot2)
+library(janitor)
+library(purrr)
 theme_set(theme_bw())
 ```
 
@@ -401,7 +403,7 @@ long_datasets <- map2(datasets, dataset_names, function(data, name) {
 merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
 ```
 
-### 2019 Analysus
+### 2019 Analysis
 ```{r}
 merged_data_2019 <- merged_data %>%
   filter(Year == 2019) %>%
