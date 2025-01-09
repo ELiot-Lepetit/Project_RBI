@@ -1,5 +1,5 @@
 ---
-title: "Report Project RBI"
+title: "Investigating the Interplay Between Socio-Demographic Indicators and Net State Domestic Product (NSDP) Across Indian States"
 author: "Aashish Sukhija & Eliot Lepetit"
 format: 
   html: default
@@ -47,3 +47,83 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 }) 
 ```
 
+
+# I) Research Question
+India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. High-performing states benefit from robust health and education systems, while underperforming states struggle due to insufficient investments in human capital. Moreover, understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, northeastern states may face challenges due to geographic isolation, while southern states may excel due to better health and education policies. Hence, our project aims to investigate the intricate relationship between socio-demographic indicators and economic performance at the state level in India.
+
+**How do socio-demographic indicators, such as literacy rate, health expenditure, and birth rate, interact with the Net State Domestic Product (NSDP) across Indian states, and how do these interactions explain regional disparities in economic and social development?:**
+
+To address this research question, we propose two sets of hypotheses which aim to uncover key drivers of regional disparities and shed light on the connections between economic performance and social development across Indian states.
+
+
+## Hypotheses
+
+#### Block 1: Health Expenditure and NSDP
+1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
+   
+   1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
+
+#### Block 2: Literacy Rate and NSDP
+2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
+  
+   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+  
+   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
+   
+This hypothesis is supported by extensive literature. For instance, Frank Götmark and Malte Andersson, in their article _Human Fertility in Relation to Education, Economy, Religion, Contraception, and Family Planning Programs_, demonstrate that 'fertility (TFR) correlates negatively with education^[Götmark, F., Andersson, M. Human Fertility in Relation to Education, Economy, Religion, Contraception, and Family Planning Programs. BMC Public Health, 20, 265 (2020).]'. 
+
+
+## Objectives of the Research
+
+To summarize, this project aims to explore the relationship between socio-demographic indicators and economic performance across Indian states, focusing on:
+
+1. **Regional Disparities**:
+   - Analyze differences in NSDP across states and identify factors driving these disparities.
+
+2. **Role of Socio-Demographic Indicators**:
+   - Investigate the correlation between NSDP and variables like literacy rates, health expenditure, and birth/death rates.
+
+3. **Regional Comparisons**:
+   - Examine how geographic and cultural factors shape economic and social outcomes.
+
+To achieve these objectives, we rely on datasets that provide insights into both socio-demographic factors and economic performance across Indian states.
+
+
+# II) Data sets desctiption
+
+## Data Sources
+1. [Handbook of Statistics on Indian States](https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook+of+Statistics+on+Indian+States)
+2. [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=22480)
+ 
+---
+
+### 1. Socio-Demographic Indicators
+The socio-demographic data is sourced from the Handbook of Statistics on Indian States (2022-2023) by the Reserve Bank of India. This dataset provides insights into health, education, and population dynamics across India’s 28 states and 8 Union territories.
+
+**Key Indicators:**
+- Literacy Rate: Proportion of the population aged 7+ who can read and write.
+- Birth Rate: Number of live births per 1,000 people annually.
+- Death Rate: Number of deaths per 1,000 people annually.
+- Sex Ratio: Number of females per 1,000 males.
+- Total Population: Census-based state population projections.
+- Infant Mortality Rate (IMR): Infant deaths per 1,000 live births.
+- Total Fertility Rate (TFR): Average number of children per woman.
+- Life Expectancy: Average years a person is expected to live.
+- Public Health Expenditure: State-level spending on healthcare.
+
+These indicators provide a socio-demographic lens to explore human development and its interaction with economic growth.
+
+
+### 2. Net State Domestic Product (NSDP)
+The NSDP data is derived from the RBI’s State-wise Economic Indicators. It reflects state-level economic output at constant prices, allowing comparisons over time by adjusting for inflation.
+
+**Key Features:**
+- Measures total economic value generated within each state.
+- Disaggregated by sectors: agriculture, industry, and services.
+- Organized by fiscal years to track growth trajectories.
+
+NSDP serves as a benchmark for economic performance, offering insights into regional disparities and the structural composition of state economies.
+
+
+## Why These Datasets?
+These datasets are ideal for studying the interplay between socio-demographic factors and economic performance. While NSDP highlights economic output, socio-demographic indicators provide context for human capital and health conditions. Together, they allow for a robust analysis of regional disparities, uncovering patterns and trends that drive development outcomes across Indian states.
