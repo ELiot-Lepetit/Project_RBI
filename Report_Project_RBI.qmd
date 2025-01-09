@@ -1,0 +1,49 @@
+---
+title: "Report Project RBI"
+author: "Aashish Sukhija & Eliot Lepetit"
+format: 
+  html: default
+  pdf: default
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+here::i_am("Project_RBI.Rproj")
+library(here)       
+library(readxl)     
+library(tidyr)  
+library(stringr)
+library(dplyr)
+library(vroom)
+library(readr)
+library(knitr)
+library(ggplot2)
+library(janitor)
+library(purrr)
+theme_set(theme_bw())
+```
+
+```{r}
+#| echo: false
+suppressMessages({
+Literacy_data <- read.csv(here("data", "State-wise_Literacy_Rate.csv"))
+Birth_data <- read.csv(here("data", "State-wise_Birth_Rate.csv"))
+Sex_data <- read.csv(here("data", "State-wise_Sex_Ratio.csv"))
+Death_data <- read.csv(here("data", "State-wise_Death_Rate.csv"))
+Pop_data <- read.csv(here("data", "State-wise_Total_Population.csv"))
+IMR_data <- read.csv(here("data", "State-wise_Infant_Mortality_Rate.csv"))
+TFR_data <- read.csv(here("data", "State-wise_Total_Fertility_Rate.csv"))
+Life_data <- read.csv(here("data", "State-wise_Life_Expectancy.csv"))
+Health_Exp_data <- read.csv(here("data", "State-wise_Public_Expenditure_on_Health.csv"))
+NSDP1_data <- read.csv(here("data", "Net_State_Domestic_Product_1.csv"))
+NSDP2_data <- read.csv(here("data", "Net_State_Domestic_Product_2.csv"))
+NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
+}) 
+```
+
