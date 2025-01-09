@@ -48,15 +48,14 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 
 We now describes the data files used in this analysis, their sources, and the processing steps.
 
--   GitHub Project Link to clone is : https://github.com/ELiot-Lepetit/Project_RBI.git
+-   GitHub Project Link to clone is : [Github_link](https://github.com/ELiot-Lepetit/Project_RBI.git)
 
 -   Data Sources: 
 
-1.  Social and Demographic Indicators ~ https://www.rbi.org.in/Scripts/AnnualPublications.aspx?h
-    ead=Handbook+of+Statistics+on+Indian+States
+1. [Handbook of Statistics on Indian States](https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook+of+Statistics+on+Indian+States)
 
-2.  Net State Domestic Product - State-wise (At Constant Prices) ~ https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
-    d=22480
+2. [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
+    d=22480)
 
 Instruction to reproduce the data selection; (i) Click on the above links to reach the official website of India's Central Bank which provides the "Database on Indian Economy" and Net State Domestic Product state wise for secondary research.
 (ii) Select the Social-demographic indicators for year 2022-23; Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate etc. 
