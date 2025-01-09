@@ -366,13 +366,13 @@ This project has the potential to serve as a valuable resource for understanding
 ## Merging datasets 
 ```{r}
 datasets <- list(
-  Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, Health_Exp_data, NSDP_clean, TFR_data, IMR_data, Literacy_data
+  Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, Health_Exp_data, NSDP_clean, TFR_data, IMR_data
 )
 
 # Names of the datasets
 dataset_names <- c(
   "Literacy Rate", "Birth Rate", "Sex Ratio", "Death Rate", "Population", "Health Expenditure", 
-  "NSDP", "Total Fertility Rate", "Infant Mortality Rate", "Literacy"
+  "NSDP", "Total Fertility Rate", "Infant Mortality Rate"
 )
 
 # Preprocessing function
@@ -402,14 +402,19 @@ long_datasets <- map2(datasets, dataset_names, function(data, name) {
 merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
 ```
 
-### 2019 Analysis
+### 2019 Analysis (Hyp 1)
 ```{r}
 merged_data_2019 <- merged_data %>%
   filter(Year == 2019) %>%
   filter(!is.na(NSDP)) #We remove the NAs for NSDP
 ```
 
-
+### 2011 Analysis (Hyp 2)
+```{r}
+merged_data_2011 <- merged_data %>%
+  filter(Year == 2011) %>%
+  filter(!is.na(NSDP)) #We remove the NAs for NSDP
+```
 
 
 
