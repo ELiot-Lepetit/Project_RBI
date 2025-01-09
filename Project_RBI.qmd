@@ -57,11 +57,13 @@ We now describes the data files used in this analysis, their sources, and the pr
 2. [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
     d=22480)
 
-Instruction to reproduce the data selection; (i) Click on the above links to reach the official website of India's Central Bank which provides the "Database on Indian Economy" and Net State Domestic Product state wise for secondary research.
-(ii) Select the Social-demographic indicators for year 2022-23; Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate etc. 
-(iii) Download the respective files as excel from both the links.
-(iv) Convert the excel files in csv for better data analysis of large dataset and easy to track changes in Github.
-(v) Note: We have already provided a zip file named as data.zip in our github project which contains all the csv files.
+### Instruction to reproduce the data selection
+1. Click on the above links to reach the official website of India’s Central Bank, which provides the “Database on Indian Economy” and Net State Domestic Product state-wise for secondary research.
+2. Select the Social-demographic indicators for the year 2022-23, including Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate, etc.
+3. Download the respective files as Excel spreadsheets from both the links.
+4. Convert the Excel files into CSV format for better data analysis of large datasets and to easily track changes in GitHub.
+
+Note: We have already provided a zip file named `data.zip` in our GitHub project, which contains all the CSV files.
 
 -   A short description:
 
@@ -72,16 +74,18 @@ These datasets serve as reliable and authoritative references for our research i
 
 The socio-demographic data is obtained from the Handbook of Statistics on Indian States for year 2022-2023, an annual publication by the Reserve Bank of India.
 This dataset offers a comprehensive overview of the demographic, health, and social characteristics of Indian states, which are essential for understanding the human development aspects of economic growth.
+
 The key indicators included are:
-• State-wise Literacy Rate: Proportion of the population aged seven and above who can read and write with understanding.
-• State-wise Birth Rate: Number of live births per thousand people annually.
-• State-wise Death Rate: Number of deaths per thousand people annually.
-• State-wise Sex Ratio: Number of females per thousand males.
-• State-wise Total Population: Total population of each state based on census and projections.
-• State-wise Infant Mortality Rate (IMR): Number of infant deaths (under one year of age) per thousand live births.
-• State-wise Total Fertility Rate (TFR): Average number of children a woman is expected to have during her lifetime.
-• State-wise Life Expectancy: Average number of years a person is expected to live at birth.
-• State-wise Public Expenditure on Health: State-level spending on public healthcare infrastructure and services.
+
+- **State-wise Literacy Rate**: Proportion of the population aged seven and above who can read and write with understanding.
+- **State-wise Birth Rate**: Number of live births per thousand people annually.
+- **State-wise Death Rate**: Number of deaths per thousand people annually.
+- **State-wise Sex Ratio**: Number of females per thousand males.
+- **State-wise Total Population**: Total population of each state based on census and projections.
+- **State-wise Infant Mortality Rate (IMR)**: Number of infant deaths (under one year of age) per thousand live births.
+- **State-wise Total Fertility Rate (TFR)**: Average number of children a woman is expected to have during her lifetime.
+- **State-wise Life Expectancy**: Average number of years a person is expected to live at birth.
+- **State-wise Public Expenditure on Health**: State-level spending on public healthcare infrastructure and services.
 
 These indicators provide a socio-demographic lens for evaluating the quality of life and human development across states.
 The data enables an exploration of how socio-economic factors, such as education, health, and fertility, interact with economic growth, helping to explain variations in Net State Domestic Product.
@@ -110,18 +114,31 @@ These datasets are well-structured, publicly available, and authoritative, makin
 
 ## Basic Information about the datasets
 
-The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests. The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data w.r.t the indicators and Net State Domestic Product by year.
+The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests. The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data with respect to the indicators and Net State Domestic Product by year.
 
 ```{r}
-  data_info <- tibble(
-  Datasets = c("Literacy_data", "Birth_data", "Sex_data", "Death_data", "Pop_data", 
-           "IMR_data", "Life_data", "Health_Exp_data", "NSDP1_data", "NSDP2_data", "NSDP3_data"),
-  Rows = c(nrow(Literacy_data), nrow(Birth_data), nrow(Sex_data), nrow(Death_data), nrow(Pop_data), 
-           nrow(IMR_data), nrow(Life_data), nrow(Health_Exp_data), nrow(NSDP1_data), nrow(NSDP2_data), nrow(NSDP3_data)),
-  Columns = c(ncol(Literacy_data), ncol(Birth_data), ncol(Sex_data), ncol(Death_data), ncol(Pop_data), 
-              ncol(IMR_data), ncol(Life_data), ncol(Health_Exp_data), ncol(NSDP1_data), ncol(NSDP2_data), ncol(NSDP3_data)) )
-  data_info
+datasets <- list(
+  Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, 
+  IMR_data, Life_data, Health_Exp_data, NSDP1_data, NSDP2_data, NSDP3_data
+)
+
+# Dataset names
+dataset_names <- c(
+  "Literacy_data", "Birth_data", "Sex_data", "Death_data", "Pop_data", 
+  "IMR_data", "Life_data", "Health_Exp_data", "NSDP1_data", "NSDP2_data", "NSDP3_data"
+)
+
+# Create a tibble with Rows and Columns calculated dynamically
+data_info <- tibble(
+  Datasets = dataset_names,
+  `States/Union Territories` = sapply(datasets, nrow),
+  Years = sapply(datasets, ncol)
+)
+
+# Generate the Markdown table using knitr::kable
+kable(data_info, caption = "Summary of Datasets")
 ```
+
 
 ## Cleaning data
 In this part we removed the unused extra rows which came from the conversion from excel files to csv files. We also ensured to standardize the format of each database to facilitate merging.
