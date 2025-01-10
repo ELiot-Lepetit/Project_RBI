@@ -127,3 +127,194 @@ NSDP serves as a benchmark for economic performance, offering insights into regi
 
 ## Why These Datasets?
 These datasets are ideal for studying the interplay between socio-demographic factors and economic performance. While NSDP highlights economic output, socio-demographic indicators provide context for human capital and health conditions. Together, they allow for a robust analysis of regional disparities, uncovering patterns and trends that drive development outcomes across Indian states.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# State-wise Birth Rate
+Birth_data <- Birth_data %>%  rename(State = State.Union.Territory ) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>% 
+    slice(-c(39, 40)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
+
+# State-wise Death Rate
+Death_data <- Death_data %>%  rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(39, 40)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1))) #rounding the data to one decimal place
+
+# State-wise Public Expenditure on Health
+Health_Exp_data <- Health_Exp_data %>%
+  rename(State = `State.Union.Territory`) %>%                   
+  rename_with(~ gsub("^X|\\..*", "", .)) %>%                     
+  mutate(across(-State, as.numeric)) %>%                        
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%           
+  slice(-c(37, 38))                                             
+
+# State-wise Literacy Rate
+Literacy_data <- Literacy_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
+  mutate(across(-State, as.numeric)) %>%
+  mutate(across(where(is.numeric), ~ round(., 1))) %>%
+  slice(-c(37:40))
+
+# State-wise Total Population
+Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
+        rename_with(~ sub("^X", "", .)) %>%
+  slice(-c(37:43)) %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
+
+# State-wise Sex Ratio
+Sex_data <- Sex_data %>% rename(State = `State.Union.Territory`) %>%
+      rename_with(~ sub("^X", "", .)) %>%
+  slice(-c(37:39))  %>%
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
+  select(-`1951`)  
+
+# State-wise Total Fertility Rate
+TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
+    rename_with(~ sub("^X", "", .)) %>%
+    mutate(across(-State, as.numeric)) %>%
+  slice(-c(24:26)) %>%
+   mutate(across(where(is.numeric), ~ round(., 1)))
+
+# Infant Mortality Rate
+IMR_data <- IMR_data %>%
+  row_to_names(row_number = 1) %>%
+  slice(-c(38:41)) %>%
+  rename(State = `State/Union Territory`) %>%
+  mutate(across(-State, ~ as.numeric(gsub("\\*", "", .))))
+
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+NSDP_merged <- NSDP1_data %>%
+  full_join(NSDP2_data, by = "Year") %>%
+  full_join(NSDP3_data, by = "Year")
+
+# Removing unused rows (we keep the data only for years after 2011)
+NSDP_merged <- NSDP_merged[c(11:16, 25:29, 38:44, 53:65), ] 
+
+# Transforming missing values character as "NAs" and changing the dates format
+NSDP_merged <- NSDP_merged %>% 
+  mutate(across(everything(), ~ ifelse(. == "-", NA, .))) %>%
+  mutate(Year = as.numeric(sub("-.*", "", Year)))
+
+# We pivot the database to have a variable "State" in order to merge with other datasets
+NSDP_long <- NSDP_merged %>%
+  mutate(across(-Year, as.character)) %>%
+  pivot_longer(
+    cols = -Year,         
+    names_to = "State",    
+    values_to = "Value"     
+  ) 
+
+# Clean and arrange the State variable in alphabetical order and replace specific names
+NSDP_clean <- NSDP_long %>%
+  pivot_wider(
+    names_from = Year,     
+    values_from = Value
+  )  %>%
+  mutate(across(-State, as.numeric)) %>%
+  mutate(
+    State = gsub("\\.+", " ", State),                        # Replace "." with " "
+    State = case_when(
+      State == "Andaman Nicobar Islands" ~ "Andaman & Nicobar Islands", # Fix specific name
+      State == "Jammu Kashmir" ~ "Jammu & Kashmir",                     # Fix Jammu Kashmir
+      TRUE ~ State                                                    # Keep other names as is
+    )
+  ) %>%
+  arrange(State)  # Sort by State in alphabetical order
+
+rm(NSDP1_data, NSDP2_data, NSDP3_data)
+
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+datasets <- list(
+  Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, Health_Exp_data, NSDP_clean, TFR_data, IMR_data
+)
+
+# Names of the datasets
+dataset_names <- c(
+  "Literacy Rate", "Birth Rate", "Sex Ratio", "Death Rate", "Population", "Health Expenditure", 
+  "NSDP", "Total Fertility Rate", "Infant Mortality Rate"
+)
+
+# Preprocessing function
+preprocess_dataset <- function(data) {
+  data %>%
+    {if (any(grepl("State", colnames(.)))) rename(., State = starts_with("State")) else .} %>% # Rename State if it exists
+    rename_with(~ gsub("^X", "", .), -State) %>%    # Remove "X" prefix from year columns
+    {if ("1951" %in% colnames(.)) select(., -`1951`) else .} %>% # Remove "1951" if it exists
+    mutate(across(-State, as.character))           # Ensure all year columns are character
+}
+
+# Apply preprocessing to all datasets
+datasets <- map(datasets, preprocess_dataset)
+
+# Convert each dataset to long format
+long_datasets <- map2(datasets, dataset_names, function(data, name) {
+  data %>%
+    pivot_longer(
+      cols = -State,                
+      names_to = "Year",           
+      values_to = name              
+    ) %>%
+    mutate(Year = as.numeric(Year)) 
+})
+
+# Merge all long-format datasets by "State" and "Year"
+merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
+```
+
+
+After merging all the datasets, we observed missing values across certain years, as not all demographic variables are consistently available for every year in the RBI datasets. To address this, we selected specific years for each hypothesis: **2019** for the first and **2011** for the second.
+
+
+<div style="display: flex; justify-content: space-between;">
+
+<div style="width: 48%;">
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+table_2019 <- merged_data %>%
+  filter(State != "ALL INDIA") %>%
+  filter(Year == 2019) %>%
+  select(State, Year, NSDP, `Health Expenditure`, `Death Rate`, `Birth Rate`, `Infant Mortality Rate`) %>%
+  head(5)
+
+knitr::kable(table_2019, caption = "Data for Hypothese 1", align = "c")
+```
+</div> <div style="width: 48%;">
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+table_2011 <- merged_data %>%
+  filter(Year == 2011) %>%
+  select(State, Year, NSDP, `Literacy Rate`, `Birth Rate`, `Sex Ratio`, `Death Rate`, `Infant Mortality Rate`) %>%
+  head(5)
+
+knitr::kable(table_2011, caption = "Data for Hypothese 2", align = "c")
+```
+
+</div> </div>
+
+
