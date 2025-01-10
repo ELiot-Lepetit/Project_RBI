@@ -52,18 +52,18 @@ We now describes the data files used in this analysis, their sources, and the pr
 
 -   GitHub Project Link to clone is : [Github_link](https://github.com/ELiot-Lepetit/Project_RBI.git)
 
--   Data Sources: 
+-   Data Sources:
 
-1. [Handbook of Statistics on Indian States](https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook+of+Statistics+on+Indian+States)
+1.  [Handbook of Statistics on Indian States](https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook+of+Statistics+on+Indian+States)
 
-2. [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?i
-    d=22480)
+2.  [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?i%20d=22480)
 
 ### Instruction to reproduce the data selection
-1. Click on the above links to reach the official website of India’s Central Bank, which provides the “Database on Indian Economy” and Net State Domestic Product state-wise for secondary research.
-2. Select the Social-demographic indicators for the year 2022-23, including Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate, etc.
-3. Download the respective files as Excel spreadsheets from both the links.
-4. Convert the Excel files into CSV format for better data analysis of large datasets and to easily track changes in GitHub.
+
+1.  Click on the above links to reach the official website of India’s Central Bank, which provides the “Database on Indian Economy” and Net State Domestic Product state-wise for secondary research.
+2.  Select the Social-demographic indicators for the year 2022-23, including Birth rate, Death rate, Population, Literacy rate, Infant Mortality rate, etc.
+3.  Download the respective files as Excel spreadsheets from both the links.
+4.  Convert the Excel files into CSV format for better data analysis of large datasets and to easily track changes in GitHub.
 
 Note: We have already provided a zip file named `data.zip` in our GitHub project, which contains all the CSV files.
 
@@ -79,15 +79,15 @@ This dataset offers a comprehensive overview of the demographic, health, and soc
 
 The key indicators included are:
 
-- **State-wise Literacy Rate**: Proportion of the population aged seven and above who can read and write with understanding.
-- **State-wise Birth Rate**: Number of live births per thousand people annually.
-- **State-wise Death Rate**: Number of deaths per thousand people annually.
-- **State-wise Sex Ratio**: Number of females per thousand males.
-- **State-wise Total Population**: Total population of each state based on census and projections.
-- **State-wise Infant Mortality Rate (IMR)**: Number of infant deaths (under one year of age) per thousand live births.
-- **State-wise Total Fertility Rate (TFR)**: Average number of children a woman is expected to have during her lifetime.
-- **State-wise Life Expectancy**: Average number of years a person is expected to live at birth.
-- **State-wise Public Expenditure on Health**: State-level spending on public healthcare infrastructure and services.
+-   **State-wise Literacy Rate**: Proportion of the population aged seven and above who can read and write with understanding.
+-   **State-wise Birth Rate**: Number of live births per thousand people annually.
+-   **State-wise Death Rate**: Number of deaths per thousand people annually.
+-   **State-wise Sex Ratio**: Number of females per thousand males.
+-   **State-wise Total Population**: Total population of each state based on census and projections.
+-   **State-wise Infant Mortality Rate (IMR)**: Number of infant deaths (under one year of age) per thousand live births.
+-   **State-wise Total Fertility Rate (TFR)**: Average number of children a woman is expected to have during her lifetime.
+-   **State-wise Life Expectancy**: Average number of years a person is expected to live at birth.
+-   **State-wise Public Expenditure on Health**: State-level spending on public healthcare infrastructure and services.
 
 These indicators provide a socio-demographic lens for evaluating the quality of life and human development across states.
 The data enables an exploration of how socio-economic factors, such as education, health, and fertility, interact with economic growth, helping to explain variations in Net State Domestic Product.
@@ -110,13 +110,15 @@ By focusing on state-level economic activity, this resource provides insights in
 **Integration and Use in Analysis**
 
 All indicators in the datasets complement each other by linking economic performance (NSDP) with socio-demographic factors.
-While the NSDP data offers insights into the scale and composition of economic activity, the socio-demographic indicators reveal the underlying human capital and health factors influencing economic growth. Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
+While the NSDP data offers insights into the scale and composition of economic activity, the socio-demographic indicators reveal the underlying human capital and health factors influencing economic growth.
+Together, they enable a multi-dimensional analysis of regional disparities, allowing researchers to examine how socio-demographic conditions impact economic outcomes and vice versa.
 
 These datasets are well-structured, publicly available, and authoritative, making them ideal for analyzing the interplay between economic performance and human development across Indian states along with the adversities.
 
 ## Basic Information about the datasets
 
-The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests. The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data with respect to the indicators and Net State Domestic Product by year.
+The Datasets table represents the 11 raw data sets before the cleaning and merging which we will use for visualization and interpretation of our research questions/interests.
+The number of rows depicts the the number of states and union territories and the number of columns represent the availability of data with respect to the indicators and Net State Domestic Product by year.
 
 ```{r}
 datasets <- list(
@@ -141,9 +143,10 @@ data_info <- tibble(
 kable(data_info, caption = "Summary of Datasets")
 ```
 
-
 ## Cleaning data
-In this part we removed the unused extra rows which came from the conversion from excel files to csv files. We also ensured to standardize the format of each database to facilitate merging.
+
+In this part we removed the unused extra rows which came from the conversion from excel files to csv files.
+We also ensured to standardize the format of each database to facilitate merging.
 
 ### Cleaning Social and Demographic Indicators datasets to prepare for merging with Net State Domestic Product Dataset
 
@@ -184,7 +187,7 @@ Health_Exp_data <- Health_Exp_data %>%
   slice(-c(37, 38))                                             
 ```
 
-#### State-wise Literacy Rate 
+#### State-wise Literacy Rate
 
 ```{r}
 #| message: false
@@ -207,7 +210,7 @@ Pop_data <- Pop_data %>% rename(State = `State.Union.Territory`) %>%
   mutate(across(everything(), ~ ifelse(. == "-", NA, .)))
 ```
 
-#### State-wise Sex Ratio 
+#### State-wise Sex Ratio
 
 ```{r}
 #| message: false
@@ -231,7 +234,8 @@ TFR_data <- TFR_data %>%  rename(State = `Year`) %>%
    mutate(across(where(is.numeric), ~ round(., 1)))
 ```
 
-#### Infant mortality Rate 
+#### Infant mortality Rate
+
 ```{r}
 #| message: false
 #| warning: false
@@ -242,8 +246,8 @@ IMR_data <- IMR_data %>%
   mutate(across(-State, ~ as.numeric(gsub("\\*", "", .))))
 ```
 
-
 ### Merging and cleaning the NSDP datasets to have all states in one database
+
 The excel file contained 3 sheets which we will be merging and then pivoting to have one observation for each state (stored in a varibale named "State").
 
 ```{r}
@@ -330,40 +334,36 @@ ggplot(NSDP_plot, aes(x = Year, y = Value, color = State)) +
     panel.grid.major.y = element_line(color = "gray", linetype = "dotted"))  
 ```
 
-## Description of Research Question 
-- Research Question:- Investigating the Interplay Between Socio-Demographic Indicators and Net State Domestic Product (NSDP) Across Indian States
+## Description of Research Question
 
-- Why these Datasets:- 
-The relationship between socio-demographic indicators and economic performance analyze the complexities of regional development in a diverse country like India. This research seeks to investigate how socio-demographic factors, such as literacy rate, health expenditure, birth rate, and other indicators, interact with the Net State Domestic Product (NSDP) to shape the economic outcomes of Indian states. By linking these indicators, we aim to uncover patterns, disparities, and trends that explain variations in development outcomes across different states of India.
+-   Research Question:- Investigating the Interplay Between Socio-Demographic Indicators and Net State Domestic Product (NSDP) Across Indian States
 
-The NSDP data reflects the capacity of states to generate economic value, adjusted for inflation, allowing for meaningful comparisons over time. On the other hand, socio-demographic indicators reveal the underlying health and human capital conditions that can either drive or hinder economic growth. Together, these datasets provide a robust foundation for analysis of regional disparities, enabling us to examine how social conditions influence economic outcomes and vice versa.
+-   Why these Datasets:- The relationship between socio-demographic indicators and economic performance analyze the complexities of regional development in a diverse country like India.
+    This research seeks to investigate how socio-demographic factors, such as literacy rate, health expenditure, birth rate, and other indicators, interact with the Net State Domestic Product (NSDP) to shape the economic outcomes of Indian states.
+    By linking these indicators, we aim to uncover patterns, disparities, and trends that explain variations in development outcomes across different states of India.
 
-- Objectives of the Research:-
-	1.	Understanding Regional Disparities:
-	•	Analyze differences in NSDP values across states and identify the factors contributing to these disparities.
-	•	Explore why some states (e.g., Maharashtra, Tamil Nadu) consistently outperform others (e.g., Bihar, Odisha) in terms of economic growth.
-	2.	Exploring the Role of Socio-Demographic Indicators:
-	•	Investigate the correlation between NSDP and socio-demographic variables like literacy rates, health expenditure, and birth/death rates.
-	•	Examine whether higher investments in human capital and health infrastructure translate to better economic performance.
-	3.	Analyzing Growth Trajectories:
-	•	Evaluate how NSDP and socio-demographic indicators have evolved over time, identifying trends and growth trajectories for individual states.
-	4.	Regional and Cultural Comparisons:
-	•	Group states by geographic regions (e.g., northern, southern, northeastern) to understand how shared cultural and geographical factors influence economic and social outcomes.
-	•	Assess whether regional similarities (e.g., among northeastern states) lead to comparable growth patterns in NSDP and socio-demographic indicators.
+The NSDP data reflects the capacity of states to generate economic value, adjusted for inflation, allowing for meaningful comparisons over time.
+On the other hand, socio-demographic indicators reveal the underlying health and human capital conditions that can either drive or hinder economic growth.
+Together, these datasets provide a robust foundation for analysis of regional disparities, enabling us to examine how social conditions influence economic outcomes and vice versa.
 
+-   Objectives of the Research:-
+    1.  Understanding Regional Disparities: • Analyze differences in NSDP values across states and identify the factors contributing to these disparities. • Explore why some states (e.g., Maharashtra, Tamil Nadu) consistently outperform others (e.g., Bihar, Odisha) in terms of economic growth.
+    2.  Exploring the Role of Socio-Demographic Indicators: • Investigate the correlation between NSDP and socio-demographic variables like literacy rates, health expenditure, and birth/death rates. • Examine whether higher investments in human capital and health infrastructure translate to better economic performance.
+    3.  Analyzing Growth Trajectories: • Evaluate how NSDP and socio-demographic indicators have evolved over time, identifying trends and growth trajectories for individual states.
+    4.  Regional and Cultural Comparisons: • Group states by geographic regions (e.g., northern, southern, northeastern) to understand how shared cultural and geographical factors influence economic and social outcomes. • Assess whether regional similarities (e.g., among northeastern states) lead to comparable growth patterns in NSDP and socio-demographic indicators.
+-   Why this Research Questions:-
 
-- Why this Research Questions:-
+India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors.
+While high-performing states may benefit from robust health and education systems, underperforming states may struggle due to insufficient investments in human capital.
+By focusing on these dynamics, this research can provide insights into the structural differences that drive variations in state-level development.
 
-India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. While high-performing states may benefit from robust health and education systems, underperforming states may struggle due to insufficient investments in human capital. By focusing on these dynamics, this research can provide insights into the structural differences that drive variations in state-level development.
+And, also understanding the impact of cultural and geographic differences adds a unique layer to the analysis.
+For instance, states in the northeast may face challenges due to geographic isolation, while southern states may excel due to better health and education policies.
 
-And, also understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, states in the northeast may face challenges due to geographic isolation, while southern states may excel due to better health and education policies.
+-   Conclusion:- This project has the potential to serve as a valuable resource for understanding the factors shaping economic performance in developing nations, offering lessons for addressing disparities and fostering equitable development. By linking social and economic datasets, this study not only explains past growth patterns but also informs future strategies for sustainable development.
 
-- Conclusion:-
-This project has the potential to serve as a valuable resource for understanding the factors shaping economic performance in developing nations, offering lessons for addressing disparities and fostering equitable development. By linking social and economic datasets, this study not only explains past growth patterns but also informs future strategies for sustainable development. 
+## Merging datasets
 
-
-
-## Merging datasets 
 ```{r}
 datasets <- list(
   Literacy_data, Birth_data, Sex_data, Death_data, Pop_data, Health_Exp_data, NSDP_clean, TFR_data, IMR_data
@@ -403,6 +403,7 @@ merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
 ```
 
 ### 2019 Analysis (Hyp 1)
+
 ```{r}
 merged_data_2019 <- merged_data %>%
   filter(Year == 2019) %>%
@@ -410,10 +411,24 @@ merged_data_2019 <- merged_data %>%
 ```
 
 ### 2011 Analysis (Hyp 2)
+
 ```{r}
 merged_data_2011 <- merged_data %>%
   filter(Year == 2011) %>%
   filter(!is.na(NSDP)) #We remove the NAs for NSDP
+```
+
+
+## Merged table display
+```{r}
+# Show the first 5 rows and the last 5 rows
+table_to_present <- merged_data %>%
+  filter(State!= "ALL INDIA") %>%
+  filter(Year %in% c(2011, 2019)) %>% # Filter for specific years
+  {bind_rows(head(., 5), tail(., 5))} # Combine first 5 rows and last 5 rows
+
+# Render the table
+kable(table_to_present, caption = "Summary of the Merged Dataset", align = "c")
 ```
 
 
