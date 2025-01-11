@@ -317,4 +317,184 @@ knitr::kable(table_2011, caption = "Data for Hypothese 2", align = "c")
 
 </div> </div>
 
+# Block 2 Hypothesis 
+2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
+  
+   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+  
+   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
+   
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+merged_data_2011 <- merged_data %>%
+  filter(Year == 2011) %>%
+  filter(!is.na(NSDP)) #We remove the NAs for NSDP
+```
+
+```{r}
+# Select 6 states w.r.t different directions in India
+selected_states <- c("Maharashtra", "Karnataka","Odisha", "Punjab", "Rajasthan", "Assam")
+
+# Filter data for these states
+Filter_data_2011 <- merged_data_2011 |> filter(State %in% selected_states)
+```
+
+
+
+```{r}
+# Check the data structure
+str(Filter_data_2011)
+
+# Inspect Literacy Rate and NSDP values
+Filter_data_2011 |> select(State, NSDP, "Literacy Rate", "Sex Ratio", "Birth Rate")
+```
+
+
+```{r}
+# Remove rows with NA values from every variable
+Filter_data_2011 <- Filter_data_2011 |> 
+  filter(!is.na(`Literacy Rate`), !is.na(NSDP), !is.na(`Sex Ratio`), !is.na(`Birth Rate`))
+```
+
+```{r}
+# Check the structure of the dataset
+str(Filter_data_2011)
+
+# Convert NSDP to numeric if necessary
+Filter_data_2011 <- Filter_data_2011 |> 
+  mutate(NSDP = as.numeric(NSDP), `Sex Ratio` = as.numeric(`Sex Ratio`), `Birth Rate` = as.numeric(`Birth Rate`),`Literacy Rate` = as.numeric(`Literacy Rate`) )
+```
+
+```{r}
+ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
+  geom_point(size = 2) +  # Add points
+  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
+  labs( title = "Relationship Between NSDP and Literacy Rate", y = "Literacy Rate (%)", x = "NSDP (in Crores)", color = "State") +
+  scale_x_continuous(limits = c(min(Filter_data_2011$NSDP), max(Filter_data_2011$NSDP))) +  # Ensure NSDP is in ascending order
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) , max(Filter_data_2011$`Literacy Rate`))) +  # Ensure ascending Literacy Rate
+  theme_minimal()  # Use a clean theme
+```
+in 2011, +ve relationship b/w NSDP & literacy rate for the 6 chosen states
+This plot visually examines the relationship between NSDP (economic output) and literacy levels, potentially revealing trends or correlations.
+```{r}
+cor(Filter_data_2011$NSDP, Filter_data_2011$`Literacy Rate`) #  correlation coefficient between two variables
+
+# Linear regression
+model1 <- lm(`Literacy Rate` ~ NSDP, data = Filter_data_2011)
+summary(model1)
+```
+	Slope for NSDP (9.821e-06):
+	•	Indicates the change in Literacy Rate for a one-unit increase in NSDP.
+	•	Interpretation: For every 1-unit increase in NSDP, Literacy Rate increases by 0.000009821.
+	•	This slope is not statistically significant (p-value = 0.136), meaning we cannot confidently assert that NSDP has a meaningful effect on Literacy Rate.
+	
+		•	A p-value > 0.05 indicates the model is not statistically significant, meaning NSDP is not a strong predictor of Literacy Rate.
+
+
+
+Summary
+	1.	Correlation: NSDP and Literacy Rate have a moderate positive correlation (0.6818).
+	2.	Regression:
+	•	The model suggests a weak positive relationship between NSDP and Literacy Rate, but the effect of NSDP is not statistically significant (p-value = 0.136).
+	•	The model explains around 46.5% of the variance in Literacy Rate, which is moderate but not strong.
+	•	The overall model is not significant (p-value = 0.1357).
+
+Interpretation: While there is a visible positive trend, the relationship between NSDP and Literacy Rate is not strong or statistically reliable in this dataset.
+
+While there is a visible positive relationship between NSDP and Literacy Rate, the regression analysis indicates that NSDP is not a statistically significant predictor of Literacy Rate. 
+This suggests that other factors may be influencing Literacy Rate more strongly than NSDP alone.
+
+
+
+2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+```{r}
+ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Sex Ratio`, color = State)) +
+  geom_point(size = 2) +  # Add points
+  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
+  labs( title = "Relationship Between Sex Ratio and Literacy Rate", y = " Sex Ratio (%)", x = "Literacy Rate (%)", color = "State") +
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Sex Ratio`) - 1, max(Filter_data_2011$`Sex Ratio`) + 1)) +  # Ensure Sex Ratio is in ascending order
+  scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 1 , max(Filter_data_2011$`Literacy Rate`) + 1 )) +  # Ensure ascending Literacy Rate
+  theme_minimal()  # Use a clean theme
+```
+
+Testing this hypothesis
+```{r}
+cor(Filter_data_2011$`Sex Ratio`, Filter_data_2011$`Literacy Rate`) #  correlation coefficient between two variables
+
+# Linear regression
+model1 <- lm( `Sex Ratio` ~ `Literacy Rate`, data = Filter_data_2011)
+summary(model1)
+```
+
+Results:- 
+
+	•	A correlation coefficient of -0.128 suggests a very weak negative correlation between the two variables:
+	•	As the Literacy Rate increases, the Sex Ratio (number of females per 1000 males) tends to decrease slightly, but the relationship is very weak.
+	
+We feel this could be due to our lack of data, or due to some unexplained factors in the code since we see changes in this in a 
+
+#### due to limited nature od the data, we cant say our hypothesis is true but the later reserach finds that our hypothesis is true with referennce to this paper. and that is. we think we dont find the resuts we were hoping due to . either way these are the results
+
+	•	Intercept (1001.104):
+	•	This is the predicted Sex Ratio when the Literacy Rate is 0.
+	•	Value: 1001.104 females per 1000 males.
+	•	It is statistically significant with a p-value of 0.0108 (< 0.05).
+	•	Slope for Literacy Rate (-0.775):
+	•	Indicates the change in the Sex Ratio for a one-unit increase in Literacy Rate.
+	•	Interpretation: For every 1% increase in Literacy Rate, the Sex Ratio decreases by 0.775 females per 1000 males.
+	•	This slope is not statistically significant (p-value = 0.8087), so we cannot confidently say that Literacy Rate has any meaningful effect on the Sex Ratio.
+	
+.	Correlation: A very weak negative correlation (-0.128) exists between Literacy Rate and Sex Ratio.
+	2.	Regression:
+	•	Literacy Rate has a small negative effect on Sex Ratio (-0.775), but it is not statistically significant (p-value = 0.8087).
+	•	The model has a very low explanatory power (R-squared = 0.01645).
+
+From these results, you cannot conclude that Literacy Rate has any meaningful or statistically significant effect on Sex Ratio. The weak correlation and poor regression fit suggest that other factors likely explain variations in the Sex Ratio.
+
+
+### what if we increase the no of states ???
+
+2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
+
+```{r}
+ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Birth Rate`, color = State)) +
+  geom_point(size = 2) +  # Add points
+  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
+  labs( title = "Relationship Between Literacy Rate and Birth Rate", y = " Birth Rate (%)", x = "Literacy Rate (%)", color = "State") +
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Birth Rate`) -3 , max(Filter_data_2011$`Birth Rate`)+3)) +  # Ensure Birth Rate is in ascending order
+scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 3, 
+                              max(Filter_data_2011$`Literacy Rate`) + 3))  + theme_minimal()  # Use a clean theme
+```
+
+
+```{r}
+cor(Filter_data_2011$`Birth Rate`, Filter_data_2011$`Literacy Rate`) #  correlation coefficient between two variables
+# Linear regression
+model1 <- lm( `Birth Rate` ~ `Literacy Rate`, data = Filter_data_2011)
+summary(model1)
+```
+we find:-
+	The coefficient (-0.8891) indicates a strong negative correlation:
+	•	As the Literacy Rate increases, the Birth Rate tends to decrease significantly.
+	•	This aligns with theories suggesting higher literacy rates are associated with lower birth rates due to factors like education, urbanization, and access to family planning
+	
+	•	For every 1% increase in Literacy Rate, the Birth Rate decreases by 0.6398 births per 1000 people.
+	•	The negative slope supports the hypothesis that higher literacy rates are associated with lower birth rates.
+	•	Statistically significant (p-value = 0.01776 < 0.05), meaning we have strong evidence that Literacy Rate influences Birth Rate.
+	
+		1.	Correlation: A strong negative correlation exists between Birth Rate and Literacy Rate (-0.8891).
+	2.	Regression:
+	•	The model confirms that higher Literacy Rates are associated with lower Birth Rates.
+	•	The effect is statistically significant (p-value = 0.01776).
+	•	The model explains a large portion of variability in Birth Rate (R-squared = 79.05%).
+	
+	Conclusion
+
+The results provide strong evidence to support the hypothesis that higher literacy rates are associated with lower birth rates. This aligns with social and economic theories that suggest education improves awareness and access to family planning, contributing to reduced fertility rates.
 
