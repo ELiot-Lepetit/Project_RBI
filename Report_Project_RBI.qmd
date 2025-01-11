@@ -571,6 +571,35 @@ scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 3,
 4.	Lag Effect: The observed relationship might reflect a lag effect, where the impact of literacy improvements on birth rates takes time to manifest for states having higher birth rate even with moderate literacy rates.
 
 The graph supports the hypothesis that higher literacy rates are associated with lower birth rates. Literacy is a critical driver of reduced birth rates, but it must be complemented by socio-economic and healthcare interventions for sustained impact.
+
+```{r, fig.align="center"}
+#| message: false
+#| warning: false
+#| echo: false
+# Compute correlation for Birth Rate and Literacy Rate
+correlation_birth_rate <- cor(Filter_data_2011$`Birth Rate`, Filter_data_2011$`Literacy Rate`)
+
+# Fit the linear regression model for Birth Rate and Literacy Rate
+model_birth_rate <- lm(`Birth Rate` ~ `Literacy Rate`, data = Filter_data_2011)
+summary_model_birth_rate <- summary(model_birth_rate)
+
+# Extract key statistics from the regression
+results_table_birth_rate <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope (Literacy Rate)", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation_birth_rate, 3),                             # Correlation coefficient
+    round(summary_model_birth_rate$coefficients[1, 1], 3),        # Intercept
+    round(summary_model_birth_rate$coefficients[2, 1], 6),        # Slope
+    round(summary_model_birth_rate$r.squared, 3),                 # R-squared
+    round(summary_model_birth_rate$adj.r.squared, 3),             # Adjusted R-squared
+    round(summary_model_birth_rate$coefficients[2, 4], 3)         # p-value for the slope
+  )
+)
+
+# Display the table
+kable(results_table_birth_rate, caption = "Summary of Correlation and Linear Regression Results for Birth Rate and Literacy Rate")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
+  row_spec(0, align = "c")
 ```
 we find:-
 	The coefficient (-0.8891) indicates a strong negative correlation:
