@@ -25,6 +25,7 @@ library(knitr)
 library(ggplot2)
 library(janitor)
 library(purrr)
+library(kableExtra)
 theme_set(theme_bw())
 ```
 
@@ -326,62 +327,48 @@ knitr::kable(table_2011, caption = "Data for Hypothese 2", align = "c")
 
 </div> </div>
 
-# Block 2 Hypothesis 
-2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
-  
-   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
-  
-   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
-  
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-merged_data_2011 <- merged_data %>%
-  filter(Year == 2011) %>%
-  filter(!is.na(NSDP)) #We remove the NAs for NSDP
-```
+
+# III) Analysis
 To work around this hypothesis, we have carefully selected six states representing different geographic directions of India. These states — Maharashtra (Central), Karnataka (South), Odisha (East), Punjab (North), Rajasthan (North-west), and Assam (North-east) were chosen to capture the cultural, economic, and regional variations that define India’s complexity. By incorporating states from distinct regions, this analysis aims to provide a holistic overview of how factors such as literacy rates, economic output, and demographic indicators vary across the nation’s vast and heterogeneous landscape.
 ```{r,, results='hide'}
 #| message: false
 #| warning: false
 #| echo: false
-# Select 6 states w.r.t different directions in India
+# Select 6 states w.r.t different geographical regions in India
 selected_states <- c("Maharashtra", "Karnataka","Odisha", "Punjab", "Rajasthan", "Assam")
 
 # Filter data for these states
-Filter_data_2011 <- merged_data_2011 |> filter(State %in% selected_states)
+Filter_data <- merged_data |> filter(State %in% selected_states) %>%
+  filter(!is.na(NSDP))
 ```
+## Hypothesis 1 Analysis
+1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
+   
+   1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
 
 
 
-```{r, results='hide'}
+## Hypothesis 2 Analysis
+2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
+  
+   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+  
+   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
+
+```{r,, results='hide'}
 #| message: false
 #| warning: false
 #| echo: false
-# Check the data structure
-str(Filter_data_2011)
+Filter_data_2011 <- Filter_data %>%
+  filter(Year == 2011) 
 
-# Inspect Literacy Rate and NSDP values
-Filter_data_2011 |> select(State, NSDP, "Literacy Rate", "Sex Ratio", "Birth Rate")
-```
-```{r, results='hide'}
-#| message: false
-#| warning: false
-#| echo: false
-# Remove rows with NA values from every variable
-Filter_data_2011 <- Filter_data_2011 |> 
-  filter(!is.na(`Literacy Rate`), !is.na(NSDP), !is.na(`Sex Ratio`), !is.na(`Birth Rate`))
-```
+# Select specific columns for the hypothesis
+Filter_data_2011 <- Filter_data_2011 %>% select(State, Year, NSDP, `Literacy Rate`, `Sex Ratio`, `Birth Rate`)
 
-```{r, results='hide'}
-#| message: false
-#| warning: false
-#| echo: false
 # Check the structure of the dataset
 str(Filter_data_2011)
 
-# Convert NSDP to numeric if necessary
+# Convert the observations to numeric 
 Filter_data_2011 <- Filter_data_2011 |> 
   mutate(NSDP = as.numeric(NSDP), `Sex Ratio` = as.numeric(`Sex Ratio`), `Birth Rate` = as.numeric(`Birth Rate`),`Literacy Rate` = as.numeric(`Literacy Rate`) )
 ```
@@ -389,21 +376,13 @@ Filter_data_2011 <- Filter_data_2011 |>
 #| message: false
 #| warning: false
 #| echo: false
-library(dplyr)
-# Select specific columns by name
-selected_columns <- Filter_data_2011 %>%
-  select(State, Year ,`Literacy Rate`, `Birth Rate`, `Sex Ratio`, `NSDP`)  # Replace with your actual column names
-
 # Display the table
-library(knitr)
-library(kableExtra)
-
-kable(selected_columns, caption = "Table: Selected States from Filtered Data (2011)")  %>%
+kable(Filter_data_2011, caption = "Table: Selected States from Filtered Data (2011)")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
   row_spec(0, align = "c")                                   # Center column headers and values
 ```
 
-#### Plotting a ggplot for the first base of the hypothesis i.e States with higher NSDP tend to have higher literacy rates.
+#### Generating a ggplot for the first base of the hypothesis i.e States with higher NSDP tend to have higher literacy rates.
 
 This plot visually examines the relationship between Net State Domestic Product (NSDP) and Literacy Rate across six selected states in 2011, representing different regions of India. The analysis uses NSDP as a proxy for economic productivity and literacy rate as an indicator of education levels. The scatter plot, augmented by a regression line, highlights how higher NSDP values are associated with increased literacy rates.
 
@@ -412,13 +391,13 @@ This plot visually examines the relationship between Net State Domestic Product 
 #| warning: false
 #| echo: false
 ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
-  geom_point(size = 1.5) +  # Add points
-  geom_text(aes(label = State), vjust = -0.5, size = 2) +  # Label states above points
+  geom_point(size = 1.5) +  
+  geom_text(aes(label = State), vjust = -0.5, size = 2) + 
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
   labs( title = "Relationship Between NSDP and Literacy Rate", y = "Literacy Rate (%)", x = "NSDP (in Crores)", color = "State") +
   scale_x_continuous(limits = c(min(Filter_data_2011$NSDP) , max(Filter_data_2011$NSDP))) +  # Ensure NSDP is in ascending order
-  scale_y_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) , max(Filter_data_2011$`Literacy Rate`))) +  # Ensure ascending Literacy Rate
-  theme_minimal()  # Use a clean theme
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) , max(Filter_data_2011$`Literacy Rate`))) +  
+  theme_minimal()  
 ```
 
 #### Inference drawn from the graph:
@@ -438,8 +417,6 @@ This graph serves as an effective starting point for understanding the connectio
 #| message: false
 #| warning: false
 #| echo: false
-library(dplyr)
-library(knitr)
 
 # Compute correlation
 correlation <- cor(Filter_data_2011$NSDP, Filter_data_2011$`Literacy Rate`)
@@ -452,33 +429,32 @@ summary_model <- summary(model1)
 results_table <- data.frame(
   Statistic = c("Correlation Coefficient", "Intercept", "Slope (NSDP)", "R-squared", "Adjusted R-squared", "p-value"),
   Value = c(
-    round(correlation, 3),                                # Correlation coefficient
-    round(summary_model$coefficients[1, 1], 3),           # Intercept
-    round(summary_model$coefficients[2, 1], 6),           # Slope
-    round(summary_model$r.squared, 3),                    # R-squared
-    round(summary_model$adj.r.squared, 3),                # Adjusted R-squared
-    round(summary_model$coefficients[2, 4], 3)            # p-value for the slope
+    round(correlation, 3),                                
+    round(summary_model$coefficients[1, 1], 3),           
+    round(summary_model$coefficients[2, 1], 6),           
+    round(summary_model$r.squared, 3),                    
+    round(summary_model$adj.r.squared, 3),                
+    round(summary_model$coefficients[2, 4], 3)           
   )
 )
 
-# Display the table
 kable(results_table, caption = "Summary of Correlation and Linear Regression Results")  %>%
-  kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
-  row_spec(0, align = "c")                                   # Center column headers and values
+  kable_styling(position = "center", full_width = FALSE) %>%  
+  row_spec(0, align = "c")                                   
 ```
 In this Table, we draw a correlation to determine the strength and direction of the linear relationship between two variables NSDP & Literacy Rate. Linear regression goes beyond correlation by modeling the relationship between the variables. It tries to explain how much the dependent variable (Literacy Rate) changes with the independent variable (NSDP).
 
 #### Conclusion:
-1.	Correlation: NSDP and Literacy Rate have a moderate positive correlation (0.6818).
-2.	Regression: The slope for NSDP is nonzero but very small. The slope indicates the change in Literacy Rate by 0.000009821 for a one-unit increase in NSDP. The slope is not statistically significant as p-value > 0.05 (p-value = 0.136), meaning we cannot confidently assert that NSDP has a meaningful effect or a strong predictor of Literacy Rate.
+1.	Correlation: NSDP and Literacy Rate have a positive correlation (0.6818).
+2.	Regression: The slope for NSDP is extremely small. Moreover, the relationship is not statistically significant as p-value > 0.05 (p-value = 0.136), meaning we cannot confidently assert that NSDP has a meaningful effect or a strong predictor of Literacy Rate.
 
-While there is a visible positive relationship between NSDP and Literacy Rate, the regression analysis indicates that NSDP is not a statistically significant predictor of Literacy Rate. This suggests that other factors may be influencing Literacy Rate more strongly than NSDP alone.
+Thus, while there is a visible positive relationship between NSDP and Literacy Rate for our observations, the regression analysis indicates that NSDP is not a statistically significant predictor of Literacy Rate. This suggests that other factors may be influencing Literacy Rate more strongly than NSDP alone.
 
-
+---
 
 Hypothesis 2.1: Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
 
-#### Plotting a ggplot for Hypothesis 2.1: Literacy Rate and Sex Ratio
+#### Generating a ggplot for Hypothesis 2.1: Literacy Rate and Sex Ratio
 This graph visually examines the relationship between Literacy Rate (%) and Sex Ratio (females per 1,000 males) across six selected states in 2011.
 
 ```{r, fig.align="center"}
@@ -487,18 +463,18 @@ This graph visually examines the relationship between Literacy Rate (%) and Sex 
 #| echo: false
 ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Sex Ratio`, color = State)) +
   geom_point(size = 2) +  # Add points
-  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_text(aes(label = State), vjust = -0.5, size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
-  labs( title = "Relationship Between Sex Ratio and Literacy Rate", y = " Sex Ratio (%)", x = "Literacy Rate (%)", color = "State") +
-  scale_y_continuous(limits = c(min(Filter_data_2011$`Sex Ratio`) - 1, max(Filter_data_2011$`Sex Ratio`) + 1)) +  # Ensure Sex Ratio is in ascending order
-  scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 1 , max(Filter_data_2011$`Literacy Rate`) + 1 )) +  # Ensure ascending Literacy Rate
-  theme_minimal()  # Use a clean theme
+  labs( title = "Relationship Between Sex Ratio and Literacy Rate", y = " Sex Ratio (‰)", x = "Literacy Rate (%)", color = "State") +
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Sex Ratio`) - 1, max(Filter_data_2011$`Sex Ratio`) + 1)) +  
+  scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 1 , max(Filter_data_2011$`Literacy Rate`) + 1 )) +  #
+  theme_minimal()  
 ```
-While the hypothesis posited that higher literacy rates would be positively associated with improved sex ratios due to greater gender awareness and access to education, the graph reveals a slightly negative trend in the regression line, challenging the initial assumption.
+While the hypothesis posited that higher literacy rates would be positively associated with improved sex ratios due to greater gender awareness and access to education, the graph reveals a slightly negative trend in the regression line, challenging our initial assumption.
 
 #### Inference Drawn from the graph:
 
-1.	Negative Correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, such as Maharashtra, tend to have slightly lower sex ratios compared to states like Odisha and Assam, which have higher sex ratios and moderate literacy rates.
+1.	Negative Correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, tend to have slightly lower sex ratios compared to other states.
 2.	Regional Variations: Odisha and Assam exhibit relatively higher sex ratios despite moderate literacy rates. States like Rajasthan and Punjab show low sex ratios alongside moderate literacy rates, indicating the influence of cultural and historical factors. This highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. It is possible that if we look at the present data, results we see could be different. For instance, Sarkar, P., & Das, A. (2020), in their reserach _Gender Equality and Education in India: Exploring Regional Differences_ ^[Sarkar, P., & Das, A. (2020). Gender Equality and Education in India: Exploring Regional Differences. Social Indicators Research. DOI: 10.1007/s11205-020-02309-w.].
 
 #### Limitations of the analysis: 
@@ -511,45 +487,44 @@ While the hypothesis posited that higher literacy rates would be positively asso
 #| message: false
 #| warning: false
 #| echo: false
-# Compute correlation
 correlation <- cor(Filter_data_2011$`Sex Ratio`, Filter_data_2011$`Literacy Rate`)
 
 # Fit the linear regression model
 model_sex_ratio <- lm(`Sex Ratio` ~ `Literacy Rate`, data = Filter_data_2011)
 summary_model <- summary(model_sex_ratio)
 
-# Extract key statistics from the regression
 results_table <- data.frame(
   Statistic = c("Correlation Coefficient", "Intercept", "Slope (Literacy Rate)", "R-squared", "Adjusted R-squared", "p-value"),
   Value = c(
-    round(correlation, 3),                                # Correlation coefficient
-    round(summary_model$coefficients[1, 1], 3),           # Intercept
-    round(summary_model$coefficients[2, 1], 6),           # Slope
-    round(summary_model$r.squared, 3),                    # R-squared
-    round(summary_model$adj.r.squared, 3),                # Adjusted R-squared
-    round(summary_model$coefficients[2, 4], 3)            # p-value for the slope
+    round(correlation, 3),                                
+    round(summary_model$coefficients[1, 1], 3),           
+    round(summary_model$coefficients[2, 1], 6),           
+    round(summary_model$r.squared, 3),                    
+    round(summary_model$adj.r.squared, 3),                
+    round(summary_model$coefficients[2, 4], 3)            
   )
 )
 
-# Display the table
 kable(results_table, caption = "Summary of Correlation and Linear Regression Results for Sex Ratio and Literacy Rate")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
   row_spec(0, align = "c")
 ```
 
-In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Sex Ratio. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Sex Ratio) changes with the independent variable (Literacy Rate).
+In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Sex Ratio. 
 
 #### Conclusion
 
 1.	Correlation: Literacy Rate and Sex Ratio exhibit a weak negative correlation (-0.128). This indicates that, in 2011, as the Literacy Rate increased, the Sex Ratio (number of females per 1000 males) tends to decrease slightly, but the relationship is very weak.
-2.	Regression: The slope for Literacy Rate is nonzero but negative and very small. The slope (-0.775) indicates that for a 1% increase in Literacy Rate, the Sex Ratio decreases by 0.775 on average.
-3.	No Statistical Significance: The p-value of 0.8087 for the regression slope indicates that the relationship between literacy rate and sex ratio is not statistically significant. Thus, the observed trend cannot be confidently attributed to a causal relationship. The R-squared value (0.016) shows that only 1.6% of the variation in Sex Ratio is explained by Literacy Rate, confirming the weak explanatory power of this model.
+2.	Regression: The slope for Literacy Rate is negative such that for every 1% increase in Literacy Rate, the Sex Ratio decreases by approximately 0.775 females per thousand males.
+3.	No Statistical Significance: The p-value of 0.8087 for the regression slope indicates that the relationship between literacy rate and sex ratio is not statistically significant. Moreover, the R-squared value (0.016) shows that only 1.6% of the variation in Sex Ratio is explained by Literacy Rate, confirming the extremely weak explanatory power of this model.
 
-From these results, We cannot conclude that Literacy Rate has any meaningful or statistically significant effect on Sex Ratio. While the negative correlation suggests a possible inverse relationship, the lack of statistical significance implies that this trend may not hold consistently or could be driven by other confounding factors.
+From these results, we cannot conclude that Literacy Rate has any meaningful or statistically significant effect on Sex Ratio. While the negative correlation suggests a possible inverse relationship, the lack of statistical significance implies that this trend may not hold consistently or could be driven by other confounding factors.
+
+---
 
 2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
 
-#### Plotting a ggplot for Hypothesis 2.2: Literacy Rate and Birth Rate
+#### Generating a ggplot for Hypothesis 2.2: Literacy Rate and Birth Rate
 This graph visually examines the relationship between Literacy Rate (%) and Birth Rate (Number of live births per 1,000 people annually) across six selected states in 2011.
 
 ```{r, fig.align="center"}
@@ -558,16 +533,17 @@ This graph visually examines the relationship between Literacy Rate (%) and Birt
 #| echo: false
 ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Birth Rate`, color = State)) +
   geom_point(size = 2) +  # Add points
-  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_text(aes(label = State), vjust = -0.5, size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
   labs( title = "Relationship Between Literacy Rate and Birth Rate", y = " Birth Rate (%)", x = "Literacy Rate (%)", color = "State") +
-  scale_y_continuous(limits = c(min(Filter_data_2011$`Birth Rate`) -3 , max(Filter_data_2011$`Birth Rate`)+3)) +  # Ensure Birth Rate is in ascending order
+  scale_y_continuous(limits = c(min(Filter_data_2011$`Birth Rate`) -3 , max(Filter_data_2011$`Birth Rate`)+3)) + 
 scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 3, 
-                              max(Filter_data_2011$`Literacy Rate`) + 3))  + theme_minimal()  # Use a clean theme
+                              max(Filter_data_2011$`Literacy Rate`) + 3))  + 
+  theme_minimal()  
 ```
 #### Inference Drawn from the graph:
 
-1.	Negative Correlation: The graph displays a negative slope, indicating an inverse relationship between Literacy Rate and Birth Rate. States with higher literacy rates, such as Maharashtra, tend to have lower birth rates, whereas states like Rajasthan, with lower literacy rates, exhibit higher birth rates. This aligns with the hypothesis that higher literacy rates are associated with lower birth rates due to increased awareness, education, and access to family planning.
+1.	Negative Correlation: The graph displays a negative slope, indicating an inverse relationship between Literacy Rate and Birth Rate. States with higher literacy rates tend to have lower birth rates, whereas states with lower literacy rates exhibit higher birth rates. This aligns with our hypothesis which states that higher literacy rates are associated with lower birth rates due to increased awareness, education, and access to family planning.
 2.	Regional Variations: Maharashtra and Punjab, with relatively higher literacy rates, have lower birth rates. However, Rajasthan and Assam, with moderate literacy rates, show higher birth rates. This reflects regional disparities and the varying socio-economic and cultural factors that influence reproductive behavior across states as we talked about in Hypothesis 2.1.
 3.	Reinforcement of Educational Impact: The trend suggests that education, represented by literacy rates, plays a significant role in reducing birth rates by promoting family planning and urbanization.
 	
@@ -584,7 +560,6 @@ The graph supports the hypothesis that higher literacy rates are associated with
 #| message: false
 #| warning: false
 #| echo: false
-# Compute correlation for Birth Rate and Literacy Rate
 correlation_birth_rate <- cor(Filter_data_2011$`Birth Rate`, Filter_data_2011$`Literacy Rate`)
 
 # Fit the linear regression model for Birth Rate and Literacy Rate
@@ -595,28 +570,27 @@ summary_model_birth_rate <- summary(model_birth_rate)
 results_table_birth_rate <- data.frame(
   Statistic = c("Correlation Coefficient", "Intercept", "Slope (Literacy Rate)", "R-squared", "Adjusted R-squared", "p-value"),
   Value = c(
-    round(correlation_birth_rate, 3),                             # Correlation coefficient
-    round(summary_model_birth_rate$coefficients[1, 1], 3),        # Intercept
-    round(summary_model_birth_rate$coefficients[2, 1], 6),        # Slope
-    round(summary_model_birth_rate$r.squared, 3),                 # R-squared
-    round(summary_model_birth_rate$adj.r.squared, 3),             # Adjusted R-squared
-    round(summary_model_birth_rate$coefficients[2, 4], 3)         # p-value for the slope
+    round(correlation_birth_rate, 3),                             
+    round(summary_model_birth_rate$coefficients[1, 1], 3),       
+    round(summary_model_birth_rate$coefficients[2, 1], 6),        
+    round(summary_model_birth_rate$r.squared, 3),                 
+    round(summary_model_birth_rate$adj.r.squared, 3),             
+    round(summary_model_birth_rate$coefficients[2, 4], 3)         
   )
 )
 
-# Display the table
 kable(results_table_birth_rate, caption = "Summary of Correlation and Linear Regression Results for Birth Rate and Literacy Rate")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
   row_spec(0, align = "c")
 ```
-In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Birth Rate. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Birth Rate) changes with the independent variable (Literacy Rate).
+In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Birth Rate. 
 
 
 #### Conclusion
 
-1.	Correlation: Literacy Rate and Birth Rate exhibit a strong negative correlation (-0.889). This indicates that, in 2011, as the Literacy Rate increased, the Birth Rate (number of live births per 1,000 people annually) tended to decrease significantly.
-2.	Regression: The slope for Literacy Rate is nonzero, negative, and significant. The slope (-0.6398) indicates that for a 1% increase in Literacy Rate, the Birth Rate decreases by 0.6398 on average. The p-value of 0.01776 for the regression slope is less than 0.05, indicating that the relationship between Literacy Rate and Birth Rate is statistically significant. The R-squared value (0.7905) shows that 79.05% of the variation in Birth Rate is explained by Literacy Rate, which is a strong explanatory power for the model.
-3.	Significance of the Model: The low residual standard error (1.955) and the high F-statistic (15.09) indicate a robust model. The regression results suggest that Literacy Rate is a strong and significant predictor of Birth Rate.
-	Inference
+1.	Correlation: Literacy Rate and Birth Rate exhibit a strong negative correlation (-0.889). This indicates that, in 2011, states with higher Literacy Rates tended to have significantly lower Birth Rates
+2.	Regression: The slope for Literacy Rate is negative and significant. The slope (-0.6398) indicates that for a 1% increase in Literacy Rate, the Birth Rate decreases by 0.6398 percentage points on average. The p-value of 0.01776 for the regression slope is less than 0.05, indicating that the relationship between Literacy Rate and Birth Rate is statistically significant. Finally, the R-squared value (0.7905) shows that 79.05% of the variation in Birth Rate is explained by Literacy Rate, highlighting the strong ability of the model to explain this variation.
 
-The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India. ^[The no of words in the report are `r word_count`.]
+The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India. 
+
+^[The no of words in the report are `r word_count`.]
