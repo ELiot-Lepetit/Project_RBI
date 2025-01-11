@@ -541,7 +541,13 @@ From these results, We cannot conclude that Literacy Rate has any meaningful or 
 
 2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
 
-```{r}
+#### Plotting a ggplot for Hypothesis 2.2: Literacy Rate and Birth Rate
+This graph visually examines the relationship between Literacy Rate (%) and Birth Rate (Number of live births per 1,000 people annually) across six selected states in 2011.
+
+```{r, fig.align="center"}
+#| message: false
+#| warning: false
+#| echo: false
 ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Birth Rate`, color = State)) +
   geom_point(size = 2) +  # Add points
   geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
