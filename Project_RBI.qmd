@@ -425,7 +425,7 @@ merged_data_2011 <- merged_data %>%
 table_to_present <- merged_data %>%
   filter(State!= "ALL INDIA") %>%
   filter(Year %in% c(2011, 2019)) %>% # Filter for specific years
-  {bind_rows(head(., 5), tail(., 5))} # Combine first 5 rows and last 5 rows
+  {bind_rows(head(., 3), tail(., 3))} # Combine first 5 rows and last 5 rows
 
 # Render the table
 kable(table_to_present, caption = "Summary of the Merged Dataset", align = "c")
