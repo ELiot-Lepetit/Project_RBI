@@ -467,7 +467,7 @@ While there is a visible positive relationship between NSDP and Literacy Rate, t
 
 
 
-2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+Hypothesis 2.1: Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
 ```{r}
 ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Sex Ratio`, color = State)) +
   geom_point(size = 2) +  # Add points
