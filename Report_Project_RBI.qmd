@@ -394,47 +394,76 @@ kable(selected_columns, caption = "Table: Selected States from Filtered Data (20
   row_spec(0, align = "c")                                   # Center column headers and values
 ```
 
+#### Plotting a ggplot for the first base of the hypothesis i.e States with higher NSDP tend to have higher literacy rates.
 
+This plot visually examines the relationship between Net State Domestic Product (NSDP) and Literacy Rate across six selected states in 2011, representing different regions of India. The analysis uses NSDP as a proxy for economic productivity and literacy rate as an indicator of education levels. The scatter plot, augmented by a regression line, highlights how higher NSDP values are associated with increased literacy rates.
 
-```{r}
+```{r, fig.align="center"}
+#| message: false
+#| warning: false
+#| echo: false
 ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
-  geom_point(size = 2) +  # Add points
-  geom_text(aes(label = State), vjust = -0.5, size = 3) +  # Label states above points
+  geom_point(size = 1.5) +  # Add points
+  geom_text(aes(label = State), vjust = -0.5, size = 2) +  # Label states above points
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
   labs( title = "Relationship Between NSDP and Literacy Rate", y = "Literacy Rate (%)", x = "NSDP (in Crores)", color = "State") +
-  scale_x_continuous(limits = c(min(Filter_data_2011$NSDP), max(Filter_data_2011$NSDP))) +  # Ensure NSDP is in ascending order
+  scale_x_continuous(limits = c(min(Filter_data_2011$NSDP) , max(Filter_data_2011$NSDP))) +  # Ensure NSDP is in ascending order
   scale_y_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) , max(Filter_data_2011$`Literacy Rate`))) +  # Ensure ascending Literacy Rate
   theme_minimal()  # Use a clean theme
 ```
-in 2011, +ve relationship b/w NSDP & literacy rate for the 6 chosen states
-This plot visually examines the relationship between NSDP (economic output) and literacy levels, potentially revealing trends or correlations.
+
+#### Inference drawn from the graph:
+
+1. Positive Relationship: The upward trend of the regression line confirms a positive association between NSDP and literacy rate. States with higher economic productivity, such as Maharashtra, also exhibit higher literacy rates, suggesting a link between economic output and educational attainment.
+2.	Regional Variations: States like Maharashtra and Karnataka, with high NSDP, are positioned at the higher end of the literacy scale, while Assam and Rajasthan, with lower NSDP, show relatively lower literacy rates.
+3.	Significance of Education: This positive correlation highlights the interplay between educational development and economic productivity.
+
+#### Limitations of the analysis: 
+
+1. While the analysis demonstrates correlation, causation cannot be inferred. Other socio-economic factors, such as industrialization, healthcare, urbanization, regional investment, and socio-economic policies might also influence the relationship.
+2. Dataset: We need to include more states to strengthen the generalizability of the inference and, also focus on historically underrepresented regions like the Northeast for a more balanced perspective.
+
+This graph serves as an effective starting point for understanding the connection between education and economic output, offering valuable insights into regional disparities and developmental opportunities across India.
+
 ```{r}
-cor(Filter_data_2011$NSDP, Filter_data_2011$`Literacy Rate`) #  correlation coefficient between two variables
+#| message: false
+#| warning: false
+#| echo: false
+library(dplyr)
+library(knitr)
 
-# Linear regression
+# Compute correlation
+correlation <- cor(Filter_data_2011$NSDP, Filter_data_2011$`Literacy Rate`)
+
+# Fit the linear regression model
 model1 <- lm(`Literacy Rate` ~ NSDP, data = Filter_data_2011)
-summary(model1)
+summary_model <- summary(model1)
+
+# Extract key statistics from the regression
+results_table <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope (NSDP)", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation, 3),                                # Correlation coefficient
+    round(summary_model$coefficients[1, 1], 3),           # Intercept
+    round(summary_model$coefficients[2, 1], 6),           # Slope
+    round(summary_model$r.squared, 3),                    # R-squared
+    round(summary_model$adj.r.squared, 3),                # Adjusted R-squared
+    round(summary_model$coefficients[2, 4], 3)            # p-value for the slope
+  )
+)
+
+# Display the table
+kable(results_table, caption = "Summary of Correlation and Linear Regression Results")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
+  row_spec(0, align = "c")                                   # Center column headers and values
 ```
-	Slope for NSDP (9.821e-06):
-	•	Indicates the change in Literacy Rate for a one-unit increase in NSDP.
-	•	Interpretation: For every 1-unit increase in NSDP, Literacy Rate increases by 0.000009821.
-	•	This slope is not statistically significant (p-value = 0.136), meaning we cannot confidently assert that NSDP has a meaningful effect on Literacy Rate.
-	
-		•	A p-value > 0.05 indicates the model is not statistically significant, meaning NSDP is not a strong predictor of Literacy Rate.
+In this Table, we draw a correlation to determine the strength and direction of the linear relationship between two variables NSDP & Literacy Rate. Linear regression goes beyond correlation by modeling the relationship between the variables. It tries to explain how much the dependent variable (Literacy Rate) changes with the independent variable (NSDP).
 
+#### Conclusion:
+1.	Correlation: NSDP and Literacy Rate have a moderate positive correlation (0.6818).
+2.	Regression: The slope for NSDP is nonzero but very small. The slope indicates the change in Literacy Rate by 0.000009821 for a one-unit increase in NSDP. The slope is not statistically significant as p-value > 0.05 (p-value = 0.136), meaning we cannot confidently assert that NSDP has a meaningful effect or a strong predictor of Literacy Rate.
 
-
-Summary
-	1.	Correlation: NSDP and Literacy Rate have a moderate positive correlation (0.6818).
-	2.	Regression:
-	•	The model suggests a weak positive relationship between NSDP and Literacy Rate, but the effect of NSDP is not statistically significant (p-value = 0.136).
-	•	The model explains around 46.5% of the variance in Literacy Rate, which is moderate but not strong.
-	•	The overall model is not significant (p-value = 0.1357).
-
-Interpretation: While there is a visible positive trend, the relationship between NSDP and Literacy Rate is not strong or statistically reliable in this dataset.
-
-While there is a visible positive relationship between NSDP and Literacy Rate, the regression analysis indicates that NSDP is not a statistically significant predictor of Literacy Rate. 
-This suggests that other factors may be influencing Literacy Rate more strongly than NSDP alone.
+While there is a visible positive relationship between NSDP and Literacy Rate, the regression analysis indicates that NSDP is not a statistically significant predictor of Literacy Rate. This suggests that other factors may be influencing Literacy Rate more strongly than NSDP alone.
 
 
 
