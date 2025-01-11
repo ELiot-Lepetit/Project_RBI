@@ -468,7 +468,11 @@ While there is a visible positive relationship between NSDP and Literacy Rate, t
 
 
 Hypothesis 2.1: Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
-```{r}
+
+#### Plotting a ggplot for Hypothesis 2.1: Literacy Rate and Sex Ratio
+This graph visually examines the relationship between Literacy Rate (%) and Sex Ratio (females per 1,000 males) across six selected states in 2011.
+
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -481,38 +485,19 @@ ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Sex Ratio`, color = State
   scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 1 , max(Filter_data_2011$`Literacy Rate`) + 1 )) +  # Ensure ascending Literacy Rate
   theme_minimal()  # Use a clean theme
 ```
+While the hypothesis posited that higher literacy rates would be positively associated with improved sex ratios due to greater gender awareness and access to education, the graph reveals a slightly negative trend in the regression line, challenging the initial assumption.
 
-Testing this hypothesis
-```{r}
-cor(Filter_data_2011$`Sex Ratio`, Filter_data_2011$`Literacy Rate`) #  correlation coefficient between two variables
+#### Inference Drawn from the graph:
 
-# Linear regression
-model1 <- lm( `Sex Ratio` ~ `Literacy Rate`, data = Filter_data_2011)
-summary(model1)
-```
+1.	Negative Correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, such as Maharashtra, tend to have slightly lower sex ratios compared to states like Odisha and Assam, which have higher sex ratios and moderate literacy rates.
+2.	Regional Variations: Odisha and Assam exhibit relatively higher sex ratios despite moderate literacy rates. States like Rajasthan and Punjab show low sex ratios alongside moderate literacy rates, indicating the influence of cultural and historical factors. This highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. It is possible that if we look at the present data, results we see could be different. For instance, Sarkar, P., & Das, A. (2020), in their reserach _Gender Equality and Education in India: Exploring Regional Differences_ ^[Sarkar, P., & Das, A. (2020). Gender Equality and Education in India: Exploring Regional Differences. Social Indicators Research. DOI: 10.1007/s11205-020-02309-w.]. 
+3.	No Statistical Significance: The p-value of 0.8087 for the regression slope indicates that the relationship between literacy rate and sex ratio is not statistically significant. Thus, the observed trend cannot be confidently attributed to a causal relationship.
 
-Results:- 
+#### Limitations of the analysis: 
 
-	•	A correlation coefficient of -0.128 suggests a very weak negative correlation between the two variables:
-	•	As the Literacy Rate increases, the Sex Ratio (number of females per 1000 males) tends to decrease slightly, but the relationship is very weak.
-	
-We feel this could be due to our lack of data, or due to some unexplained factors in the code since we see changes in this in a 
-
-#### due to limited nature od the data, we cant say our hypothesis is true but the later reserach finds that our hypothesis is true with referennce to this paper. and that is. we think we dont find the resuts we were hoping due to . either way these are the results
-
-	•	Intercept (1001.104):
-	•	This is the predicted Sex Ratio when the Literacy Rate is 0.
-	•	Value: 1001.104 females per 1000 males.
-	•	It is statistically significant with a p-value of 0.0108 (< 0.05).
-	•	Slope for Literacy Rate (-0.775):
-	•	Indicates the change in the Sex Ratio for a one-unit increase in Literacy Rate.
-	•	Interpretation: For every 1% increase in Literacy Rate, the Sex Ratio decreases by 0.775 females per 1000 males.
-	•	This slope is not statistically significant (p-value = 0.8087), so we cannot confidently say that Literacy Rate has any meaningful effect on the Sex Ratio.
-	
-.	Correlation: A very weak negative correlation (-0.128) exists between Literacy Rate and Sex Ratio.
-	2.	Regression:
-	•	Literacy Rate has a small negative effect on Sex Ratio (-0.775), but it is not statistically significant (p-value = 0.8087).
-	•	The model has a very low explanatory power (R-squared = 0.01645).
+1.	Small Sample Size: The analysis includes only six states, which limits the ability to generalize findings. Expanding the dataset to include all Indian states and union territories would improve statistical reliability.
+2.	Multivariate Influence: The model considers only literacy rate, ignoring other potential factors affecting sex ratio, such as: Economic disparities (e.g., income inequality), Cultural norms (e.g., male child preference), Government interventions (e.g., Beti Bachao Beti Padhao) etc.
+3.	Lag Effect: Literacy improvements may take time to translate into gender equity. The observed trend could reflect a lag between rising literacy rates and their impact on societal norms.
 
 From these results, you cannot conclude that Literacy Rate has any meaningful or statistically significant effect on Sex Ratio. The weak correlation and poor regression fit suggest that other factors likely explain variations in the Sex Ratio.
 
