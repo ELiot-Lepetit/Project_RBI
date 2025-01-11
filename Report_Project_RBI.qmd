@@ -421,7 +421,7 @@ ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
 #### Limitations of the analysis: 
 
 1. While the analysis demonstrates correlation, causation cannot be inferred. Other socio-economic factors, such as industrialization, healthcare, urbanization, regional investment, and socio-economic policies might also influence the relationship.
-2. Dataset: We need to include more states to strengthen the generalizability of the inference and, also focus on historically underrepresented regions like the Northeast for a more balanced perspective.
+2. Dataset: We need to include more states to strengthen the generalizability of the inference and, also focus on historically underrepresented regions like the Northeast for a more balanced perspective. Increasing the number of observations might improve statistical power and lead to a more conclusive result.
 
 This graph serves as an effective starting point for understanding the connection between education and economic output, offering valuable insights into regional disparities and developmental opportunities across India.
 
