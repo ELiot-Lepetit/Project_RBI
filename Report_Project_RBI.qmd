@@ -529,9 +529,15 @@ kable(results_table, caption = "Summary of Correlation and Linear Regression Res
   row_spec(0, align = "c")
 ```
 
+In this Table,
+We analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Sex Ratio. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Sex Ratio) changes with the independent variable (Literacy Rate).
 
+#### Conclusion
 
-### what if we increase the no of states ???
+1.	Correlation: Literacy Rate and Sex Ratio exhibit a weak negative correlation (-0.128). This indicates that, in 2011, as the Literacy Rate increased, the Sex Ratio (number of females per 1000 males) tends to decrease slightly, but the relationship is very weak.
+2.	Regression: The slope for Literacy Rate is nonzero but negative and very small. The slope (-0.775) indicates that for a 1% increase in Literacy Rate, the Sex Ratio decreases by 0.775 on average. The p-value (0.809) for the slope is much greater than 0.05, meaning the relationship is not statistically significant. The R-squared value (0.016) shows that only 1.6% of the variation in Sex Ratio is explained by Literacy Rate, confirming the weak explanatory power of this model.
+
+From these results, We cannot conclude that Literacy Rate has any meaningful or statistically significant effect on Sex Ratio. While the negative correlation suggests a possible inverse relationship, the lack of statistical significance implies that this trend may not hold consistently or could be driven by other confounding factors.
 
 2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
 
