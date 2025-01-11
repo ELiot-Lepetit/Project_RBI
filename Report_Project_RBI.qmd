@@ -323,8 +323,7 @@ knitr::kable(table_2011, caption = "Data for Hypothese 2", align = "c")
    2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
   
    2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
-   
-
+  
 ```{r}
 #| message: false
 #| warning: false
@@ -333,8 +332,11 @@ merged_data_2011 <- merged_data %>%
   filter(Year == 2011) %>%
   filter(!is.na(NSDP)) #We remove the NAs for NSDP
 ```
-
-```{r}
+To work around this hypothesis, we have carefully selected six states representing different geographic directions of India. These states — Maharashtra (Central), Karnataka (South), Odisha (East), Punjab (North), Rajasthan (North-west), and Assam (North-east) were chosen to capture the cultural, economic, and regional variations that define India’s complexity. By incorporating states from distinct regions, this analysis aims to provide a holistic overview of how factors such as literacy rates, economic output, and demographic indicators vary across the nation’s vast and heterogeneous landscape.
+```{r,, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
 # Select 6 states w.r.t different directions in India
 selected_states <- c("Maharashtra", "Karnataka","Odisha", "Punjab", "Rajasthan", "Assam")
 
@@ -344,22 +346,29 @@ Filter_data_2011 <- merged_data_2011 |> filter(State %in% selected_states)
 
 
 
-```{r}
+```{r, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
 # Check the data structure
 str(Filter_data_2011)
 
 # Inspect Literacy Rate and NSDP values
 Filter_data_2011 |> select(State, NSDP, "Literacy Rate", "Sex Ratio", "Birth Rate")
 ```
-
-
-```{r}
+```{r, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
 # Remove rows with NA values from every variable
 Filter_data_2011 <- Filter_data_2011 |> 
   filter(!is.na(`Literacy Rate`), !is.na(NSDP), !is.na(`Sex Ratio`), !is.na(`Birth Rate`))
 ```
 
-```{r}
+```{r, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
 # Check the structure of the dataset
 str(Filter_data_2011)
 
