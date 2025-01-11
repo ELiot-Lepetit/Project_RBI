@@ -376,6 +376,25 @@ str(Filter_data_2011)
 Filter_data_2011 <- Filter_data_2011 |> 
   mutate(NSDP = as.numeric(NSDP), `Sex Ratio` = as.numeric(`Sex Ratio`), `Birth Rate` = as.numeric(`Birth Rate`),`Literacy Rate` = as.numeric(`Literacy Rate`) )
 ```
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(dplyr)
+# Select specific columns by name
+selected_columns <- Filter_data_2011 %>%
+  select(State, Year ,`Literacy Rate`, `Birth Rate`, `Sex Ratio`, `NSDP`)  # Replace with your actual column names
+
+# Display the table
+library(knitr)
+library(kableExtra)
+
+kable(selected_columns, caption = "Table: Selected States from Filtered Data (2011)")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
+  row_spec(0, align = "c")                                   # Center column headers and values
+```
+
+
 
 ```{r}
 ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
