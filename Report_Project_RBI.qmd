@@ -9,7 +9,6 @@ editor:
     wrap: sentence
 ---
 
-
 ```{r}
 #| message: false
 #| warning: false
@@ -47,6 +46,16 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 }) 
 ```
 
+```{r, fig.align="center"}
+#| message: false
+#| warning: false
+#| echo: false
+# Read the Quarto file
+text <- readLines("Project_RBI.qmd")
+
+# Count words
+word_count <- sum(sapply(strsplit(text, "\\s+"), length))
+```
 
 # I) Research Question
 India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. High-performing states benefit from robust health and education systems, while underperforming states struggle due to insufficient investments in human capital. Moreover, understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, northeastern states may face challenges due to geographic isolation, while southern states may excel due to better health and education policies. Hence, our project aims to investigate the intricate relationship between socio-demographic indicators and economic performance at the state level in India.
@@ -528,8 +537,7 @@ kable(results_table, caption = "Summary of Correlation and Linear Regression Res
   row_spec(0, align = "c")
 ```
 
-In this Table,
-We analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Sex Ratio. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Sex Ratio) changes with the independent variable (Literacy Rate).
+In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Sex Ratio. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Sex Ratio) changes with the independent variable (Literacy Rate).
 
 #### Conclusion
 
@@ -601,6 +609,9 @@ kable(results_table_birth_rate, caption = "Summary of Correlation and Linear Reg
   kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
   row_spec(0, align = "c")
 ```
+In this Table, we analyze the correlation to determine the strength and direction of the linear relationship between Literacy Rate and Birth Rate. Linear regression provides deeper insights by modeling this relationship, attempting to explain how much the dependent variable (Birth Rate) changes with the independent variable (Literacy Rate).
+
+
 #### Conclusion
 
 1.	Correlation: Literacy Rate and Birth Rate exhibit a strong negative correlation (-0.889). This indicates that, in 2011, as the Literacy Rate increased, the Birth Rate (number of live births per 1,000 people annually) tended to decrease significantly.
@@ -608,4 +619,4 @@ kable(results_table_birth_rate, caption = "Summary of Correlation and Linear Reg
 3.	Significance of the Model: The low residual standard error (1.955) and the high F-statistic (15.09) indicate a robust model. The regression results suggest that Literacy Rate is a strong and significant predictor of Birth Rate.
 	Inference
 
-The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing Birth Rate in India.
+The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India. ^[The no of words in the report are `r word_count`.]
