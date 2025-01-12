@@ -26,6 +26,7 @@ library(ggplot2)
 library(janitor)
 library(purrr)
 library(kableExtra)
+library(ggrepel) 
 theme_set(theme_bw())
 ```
 
@@ -408,21 +409,25 @@ This approach captures both the overall resource allocation (state values) and t
 #| message: false
 #| warning: false
 #| echo: false
-library(ggrepel) 
-ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = State)) +
-  geom_point(size = 1) +
+ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = State, size = Population / 1e6)) +
+  geom_point(alpha = 0.6) +  
   geom_text_repel(aes(label = State), size = 3) +  
-  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) + 
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  
   labs(
-    title = "Relationship Between NSDP and Health Expenditure",
-    x = "NSDP (Rupees in Crores)",
-    y = "Health Expenditure (in Crores)"
+    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    x = "NSDP per capita",
+    y = "Health Expenditure (per capita)",
+    size = "Population (in millions)"  
   ) +
-  theme_minimal() + 
-    theme(legend.position = "none")
+  scale_size_continuous(range = c(1, 8)) +  
+  theme_minimal() +
+  guides(color = "none") +  
+  theme(
+    legend.position = "right"  
+  )
 ```
 
-#### Inference Drawn from the graph:
+#### Inference drawn from the graph:
 1.	Positive Correlation: States with higher economic output per individual tend to allocate more resources to health on a per capita basis
 2. Inferences about policy choices: Maharashtra stands out with both high NSDP and Health Expenditure, reflecting its strong fiscal capacity. Uttar Pradesh, however, has a relatively high Health Expenditure compared to its NSDP, suggesting that the state prioritizes health spending despite its lower economic capacity. This could indicate a deliberate policy focus on healthcare
 3.	Clustering: Most states are clustered in the lower NSDP and Health Expenditure range, indicating limited fiscal capacity and health spending for the majority of states. These States (or Union Territories) may require targeted support to improve health expenditure despite their lower fiscal capacity.
@@ -453,7 +458,7 @@ results_table <- data.frame(
   )
 )
 
-kable(results_table, caption = "NSDP and Health Expenditure: Correlation and Regression Summary")  %>%
+kable(results_table, caption = "Summary of Correlation and Linear Regression Results")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  
   row_spec(0, align = "c")                                   
 ```
@@ -470,7 +475,7 @@ Thus, the state-level analysis highlights that states with higher NSDP are signi
 1.  The analysis does not consider critical factors, such as state policies, healthcare infrastructure, or socio-economic disparities, which may also significantly impact health expenditure.
 2.  The relationship is analyzed at the state level, which overlooks significant variations within states, such as **differences in population size** and resource allocation across regions. 
 
-These limitations highlight the need for a per capita analysis, offering a more nuanced view of health expenditure relative to individual fiscal capacity and well-being.
+These limitations highlight the need for a per capita analysis, offering a more nuanced view of health expenditure relative to individual fiscal capacity and well-being by cancelling any population effect.
 
 ---
 
@@ -490,13 +495,13 @@ ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditur
     title = "Relationship Between NSDP and Health Expenditure (per capita)",
     x = "NSDP per capita",
     y = "Health Expenditure (per capita)",
-    size = "Population (in millions)"  # Adjust size legend
+    size = "Population (in millions)"  
   ) +
-  scale_size_continuous(range = c(1, 8)) +  # Diminish size of points
+  scale_size_continuous(range = c(1, 8)) +  
   theme_minimal() +
-  guides(color = "none") +  # Remove the color legend for states
+  guides(color = "none") +  
   theme(
-    legend.position = "right"  # Position the population legend to the right
+    legend.position = "right"  
   )
 
 ```
@@ -546,11 +551,51 @@ While both regressions indicate a significant positive relationship between fisc
 
 Hypothesis 1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
 
+#### Generating ggplots for our two assumptions
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# Health Expenditure Per Capita vs Infant Mortality Rate
+ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Infant Mortality Rate`, color = State)) +
+  geom_point(color = "blue", alpha = 0.7) +
+    geom_text_repel(aes(label = State), size = 3) +  
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
+  labs(
+    title = "Relationship Between Health Expenditure and Infant Mortality Rate",
+    x = "Health Expenditure Per Capita",
+    y = "Infant Mortality Rate"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Health Expenditure Per Capita vs Death Rate
+ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Death Rate`, color = State)) +
+  geom_point(color = "darkgreen", alpha = 0.7) +
+    geom_text_repel(aes(label = State), size = 3) +  
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
+  labs(
+    title = "Relationship Between Health Expenditure and Death Rate",
+    x = "Health Expenditure Per Capita",
+    y = "Death Rate"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+#### Inference Drawn from the graph:
+1.	Negative Correlations: The regression lines indicate a slight negative relationship in both cases.
+2.  Weak Relationahsip: States with similar levels of health expenditure per capita display significant variation in death rates. This indicates that factors such as healthcare quality, public health policies, and demographic characteristics may heavily influence death rates, making it difficult to draw strong conclusions from expenditure levels alone.
 
 
 
 
----
+
+--- 
+
 ## Hypothesis 2 Analysis
 2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
   
