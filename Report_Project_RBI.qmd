@@ -423,7 +423,7 @@ ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = S
 ```
 
 #### Inference Drawn from the graph:
-1.	Positive Correlation: The graph demonstrates a positive relationship between NSDP and Health Expenditure. States with higher NSDP allocate more resources toward health.
+1.	Positive Correlation: States with higher economic output per individual tend to allocate more resources to health on a per capita basis
 2. Inferences about policy choices: Maharashtra stands out with both high NSDP and Health Expenditure, reflecting its strong fiscal capacity. Uttar Pradesh, however, has a relatively high Health Expenditure compared to its NSDP, suggesting that the state prioritizes health spending despite its lower economic capacity. This could indicate a deliberate policy focus on healthcare
 3.	Clustering: Most states are clustered in the lower NSDP and Health Expenditure range, indicating limited fiscal capacity and health spending for the majority of states. These States (or Union Territories) may require targeted support to improve health expenditure despite their lower fiscal capacity.
 
@@ -453,7 +453,7 @@ results_table <- data.frame(
   )
 )
 
-kable(results_table, caption = "Summary of Correlation and Linear Regression Results")  %>%
+kable(results_table, caption = "NSDP and Health Expenditure: Correlation and Regression Summary")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  
   row_spec(0, align = "c")                                   
 ```
@@ -476,12 +476,81 @@ These limitations highlight the need for a per capita analysis, offering a more 
 
 ### Per-capita analysis
 
+#### Generating a ggplot 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditure Per Capita`, size = Population / 1e6, color = State)) +
+  geom_point(alpha = 0.6) +  # Adjust transparency of points
+  geom_text_repel(aes(label = State), size = 3) +  
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  # Remove line from legend
+  labs(
+    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    x = "NSDP per capita",
+    y = "Health Expenditure (per capita)",
+    size = "Population (in millions)"  # Adjust size legend
+  ) +
+  scale_size_continuous(range = c(1, 8)) +  # Diminish size of points
+  theme_minimal() +
+  guides(color = "none") +  # Remove the color legend for states
+  theme(
+    legend.position = "right"  # Position the population legend to the right
+  )
+
+```
+
+#### Inference Drawn from the graph:
+1.	Positive Correlation: The graph demonstrates a positive relationship between NSDP and Health Expenditure. States with higher NSDP allocate more resources toward health.
+2.  Population effect: States with larger populations often face challenges in achieving high per capita health expenditure. Conversely, states like Nagaland and Meghalaya show that effective prioritization of health resources can result in higher per capita health expenditure, even with limited fiscal capacity.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+correlation <- cor(merged_data_2019_clean$`NSDP Per Capita`, merged_data_2019_clean$`Health Expenditure Per Capita`)
+
+# Fit the linear regression model
+model1 <- lm(`Health Expenditure Per Capita` ~ `NSDP Per Capita`, data = merged_data_2019_clean)
+summary_model <- summary(model1)
+
+# Extract key statistics from the regression
+results_table <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope (NSDP)", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation, 3),                                
+    round(summary_model$coefficients[1, 1], 3),           
+    round(summary_model$coefficients[2, 1], 6),           
+    round(summary_model$r.squared, 3),                    
+    round(summary_model$adj.r.squared, 3),                
+    round(summary_model$coefficients[2, 4], 3)           
+  )
+)
+
+kable(results_table, caption = "Overview of Correlation and Linear Regression Findings for the 'Per Capita' Analysis")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  
+  row_spec(0, align = "c")                                   
+```
+In this table, we examine the correlation and linear regression results to explore the relationship between NSDP (Net State Domestic Product) and Health Expenditure. 
+
+#### Conclusion:
+1.	Correlation: The 'per capita' analysis results align closely with those of the state-level analysis.
+2.	The lower R-squared in the per capita analysis indicates that total NSDP serves as a more robust predictor of health expenditure, reflecting the underlying influence of population size.
+
+While both regressions indicate a significant positive relationship between fiscal capacity and health expenditure, the 'per capita' analysis offers deeper insight by emphasizing the impact of population size. States with larger populations face challenges in maintaining high per capita health spending, as seen in states like Uttar Pradesh and Bihar. Conversely, smaller states like Nagaland and Meghalaya manage higher per capita health expenditures despite moderate fiscal capacity, showcasing the role of policy prioritization.
+
+---
+
+Hypothesis 1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
+
 
 
 
 
 ---
-
 ## Hypothesis 2 Analysis
 2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
   
