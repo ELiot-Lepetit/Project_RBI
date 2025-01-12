@@ -405,7 +405,7 @@ This approach captures both the overall resource allocation (state values) and t
 
 #### Generating a ggplot 
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -414,7 +414,7 @@ ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = S
   geom_text_repel(aes(label = State), size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  
   labs(
-    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    title = "Relationship Between NSDP and Health Expenditure\n(per capita)",
     x = "NSDP per capita",
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
@@ -483,7 +483,7 @@ These limitations highlight the need for a per capita analysis, offering a more 
 
 #### Generating a ggplot 
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -492,7 +492,7 @@ ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditur
   geom_text_repel(aes(label = State), size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  # Remove line from legend
   labs(
-    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    title = "Relationship Between NSDP and Health Expenditure\n(per capita)",
     x = "NSDP per capita",
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
@@ -553,7 +553,7 @@ Hypothesis 1.1. Higher health expenditure is associated with lower infant mortal
 
 #### Generating ggplots for our two assumptions
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -564,7 +564,7 @@ ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Inf
     geom_text_repel(aes(label = State), size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
   labs(
-    title = "Relationship Between Health Expenditure and Infant Mortality Rate",
+    title = "Relationship Between Health Expenditure and\nInfant Mortality Rate",
     x = "Health Expenditure Per Capita",
     y = "Infant Mortality Rate"
   ) +
