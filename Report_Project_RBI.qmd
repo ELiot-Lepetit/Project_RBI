@@ -53,12 +53,12 @@ Pop_data_2019 <- read.csv(here("data_final", "state_wise_population__2019.csv"))
 # I) Research Question
 India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. High-performing states benefit from robust health and education systems, while underperforming states struggle due to insufficient investments in human capital. Moreover, understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, northeastern states may face challenges due to geographic isolation, while southern states may excel due to better health and education policies. Hence, our project aims to investigate the intricate relationship between socio-demographic indicators and economic performance at the state level in India.
 
-**How do socio-demographic indicators, such as literacy rate, health expenditure, and birth rate, interact with the Net State Domestic Product (NSDP) across Indian states, and how do these interactions explain regional disparities in economic and social development?:**
+**How do socio-demographic indicators, such as literacy rate, health expenditure, and birth rate, interact with the Net State Domestic Product (NSDP) across Indian states, and how do these interactions explain regional disparities in economic and social development?**
 
-To address this research question, we propose two sets of hypothesis which aim to uncover key drivers of regional disparities and shed light on the connections between economic performance and social development across Indian states.
+To address this research question, we propose two sets of hypothesis which aim to uncover key drivers of regional disparities and shed light on the connections between economic performance and social development across Indian states^[In the context of this analysis, the term "states" is used inclusively to refer to both Indian states and Union Territories, unless otherwise specified.].
 
 
-## Hypothesis
+## Hypotheses
 
 #### Block 1: Health Expenditure and NSDP
 1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
@@ -103,14 +103,23 @@ To achieve these objectives, we rely on datasets that provide insights into both
 The socio-demographic data is sourced from the Handbook of Statistics on Indian States (2022-2023) by the Reserve Bank of India. This dataset provides insights into health, education, and population dynamics across India’s 28 states and 8 Union territories.
 
 **Key Indicators:**
+
 - Literacy Rate: Proportion of the population aged 7+ who can read and write.
+
 - Birth Rate: Number of live births per 1,000 people annually.
+
 - Death Rate: Number of deaths per 1,000 people annually.
+
 - Sex Ratio: Number of females per 1,000 males.
+
 - Total Population: Census-based state population projections. 
+
 - Infant Mortality Rate (IMR): Infant deaths per 1,000 live births.
+
 - Total Fertility Rate (TFR): Average number of children per woman.
+
 - Life Expectancy: Average years a person is expected to live.
+
 - Public Health Expenditure: State-level spending on healthcare.
 
 These indicators provide a socio-demographic lens to explore human development and its interaction with economic growth.
@@ -120,8 +129,11 @@ These indicators provide a socio-demographic lens to explore human development a
 The NSDP data is derived from the RBI’s State-wise Economic Indicators. It reflects state-level economic output at constant prices, allowing comparisons over time by adjusting for inflation.
 
 **Key Features:**
+
 - Measures total economic value generated within each state.
+
 - Disaggregated by sectors: agriculture, industry, and services.
+
 - Organized by fiscal years to track growth trajectories.
 
 NSDP serves as a benchmark for economic performance, offering insights into regional disparities and the structural composition of state economies.
@@ -365,7 +377,7 @@ table_2019 <- merged_data_2019_clean %>%
   head(5) %>% 
   mutate(`Health Expenditure Per Capita` = round(`Health Expenditure Per Capita`, 1))
 
-knitr::kable(table_2019, caption = "Data for Hypothesis 1", align = "c")
+knitr::kable(table_2019, caption = "Sample Dataset - First Five Observations for Hypothesis 1", align = "c")
 
 ```
 </div> <div style="width: 48%;">
@@ -379,7 +391,7 @@ table_2011 <- merged_data %>%
   select(State, Year, NSDP, `Literacy Rate`, `Birth Rate`, `Sex Ratio`, `Death Rate`, `Infant Mortality Rate`) %>%
   head(5)
 
-knitr::kable(table_2011, caption = "Data for Hypothesis 2", align = "c")
+knitr::kable(table_2011, caption = "Sample Dataset - First Five Observations for Hypothesis 2", align = "c")
 ```
 
 </div> </div>
@@ -387,7 +399,7 @@ knitr::kable(table_2011, caption = "Data for Hypothesis 2", align = "c")
 
 # III) Analysis
 
-## Hypothesis 1 Analysis
+## Hypothesis 1 Analysis:
 1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
    
    1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
@@ -429,8 +441,8 @@ ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = S
 
 #### Inference drawn from the graph:
 1.	Positive Correlation: States with higher economic output per individual tend to allocate more resources to health on a per capita basis
-2. Inferences about policy choices: Maharashtra stands out with both high NSDP and Health Expenditure, reflecting its strong fiscal capacity. Uttar Pradesh, however, has a relatively high Health Expenditure compared to its NSDP, suggesting that the state prioritizes health spending despite its lower economic capacity. This could indicate a deliberate policy focus on healthcare
-3.	Clustering: Most states are clustered in the lower NSDP and Health Expenditure range, indicating limited fiscal capacity and health spending for the majority of states. These States (or Union Territories) may require targeted support to improve health expenditure despite their lower fiscal capacity.
+2. Inferences about Policy Choices: Maharashtra stands out with both high NSDP and Health Expenditure, reflecting its strong fiscal capacity. Uttar Pradesh, however, has a relatively high Health Expenditure compared to its NSDP, suggesting that the state prioritizes health spending despite its lower economic capacity. This could indicate a deliberate policy focus on healthcare
+3.	Clustering: Most states are clustered in the lower NSDP and Health Expenditure range, indicating limited fiscal capacity and health spending for the majority of states. These states may require targeted support to improve health expenditure despite their lower fiscal capacity.
 
 
 ```{r}
@@ -508,7 +520,8 @@ ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditur
 
 #### Inference Drawn from the graph:
 1.	Positive Correlation: The graph demonstrates a positive relationship between NSDP and Health Expenditure. States with higher NSDP allocate more resources toward health.
-2.  Population effect: States with larger populations often face challenges in achieving high per capita health expenditure. Conversely, states like Nagaland and Meghalaya show that effective prioritization of health resources can result in higher per capita health expenditure, even with limited fiscal capacity.
+2.  Population Effect: On the one hand, states with larger populations often face challenges in achieving high per capita health expenditure whereas, on the other hand, regions such as Nagaland and Meghalaya highlight how strategic allocation of health resources can achieve elevated per capita health expenditure, even with constrained fiscal capacity.
+
 
 
 ```{r}
@@ -545,7 +558,7 @@ In this table, we examine the correlation and linear regression results to explo
 1.	Correlation: The 'per capita' analysis results align closely with those of the state-level analysis.
 2.	The lower R-squared in the per capita analysis indicates that total NSDP serves as a more robust predictor of health expenditure, reflecting the underlying influence of population size.
 
-While both regressions indicate a significant positive relationship between fiscal capacity and health expenditure, the 'per capita' analysis offers deeper insight by emphasizing the impact of population size. States with larger populations face challenges in maintaining high per capita health spending, as seen in states like Uttar Pradesh and Bihar. Conversely, smaller states like Nagaland and Meghalaya manage higher per capita health expenditures despite moderate fiscal capacity, showcasing the role of policy prioritization.
+While both regressions indicate a significant positive relationship between fiscal capacity and health expenditure, the 'per capita' analysis offers deeper insight by emphasizing the impact of population size. States with larger populations face challenges in maintaining high per capita health spending, as seen in states like Telangana. Conversly, smaller states demonstrate that careful health resource allocation can lead to higher per capita spending, despite their relatively limited fiscal resources. This underscores the importance of policy-driven prioritization.
 
 ---
 
@@ -588,11 +601,10 @@ ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Dea
 
 #### Inference Drawn from the graphs:
 1.	Negative Correlations: The regression lines indicate a slight negative relationship in both cases.
-2.  Weak Relationhsip: States with similar levels of health expenditure per capita display significant variation in death rates. This indicates that factors such as healthcare quality, public health policies, and demographic characteristics may heavily influence death rates, making it difficult to draw strong conclusions from expenditure levels alone.
+2.  Weak Relationship: States with similar levels of health expenditure per capita display significant variation in death rates. This indicates that factors such as healthcare quality, public health policies, and demographic characteristics may heavily influence death rates, making it difficult to draw strong conclusions from expenditure levels alone.
 
 
-We will now test for the correlation and regression:
-
+We will now proceed to examine the correlations and perform regression analyses.
 ```{r}
 #| message: false
 #| warning: false
@@ -653,12 +665,12 @@ In these tables, we examine the correlation and linear regression results to exp
 
 #### Limitations
 1.  Weak Predictive Power and Statistical Insignificance: the very low R-squared values and high p-values show that health expenditure per capita has little to no impact on these outcomes. This suggests the need to investigate additional factors, such as healthcare access, literacy rates, or disease burden, that might better explain the variations in mortality.
-2.  Scale of analysis: the analysis is conducted at the state level, which overlooks regional and intra-state variations. Differences in healthcare infrastructure, population density, and resource allocation within states could obscure the true relationship
+2.  Scale of Analysis: the analysis is conducted at the state level, which overlooks regional and intra-state variations. Differences in healthcare infrastructure, population density, and resource allocation within states could obscure the true relationship
 
 
 --- 
 
-## Hypothesis 2 Analysis
+## Hypothesis 2 Analysis:
 2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
   
    2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
@@ -753,7 +765,7 @@ ggplot(Filter_data_2011, aes(x = NSDP, y = `Literacy Rate`, color = State)) +
 
 1. Positive Relationship: The upward trend of the regression line confirms a positive association between NSDP and literacy rate. States with higher economic productivity, such as Maharashtra, also exhibit higher literacy rates, suggesting a link between economic output and educational attainment.
 2.	Regional Variations: States like Maharashtra and Karnataka, with high NSDP, are positioned at the higher end of the literacy scale, while Assam and Rajasthan, with lower NSDP, show relatively lower literacy rates.
-3.	Significance of Education: This positive correlation highlights the interplay between educational development and economic productivity.
+3.	Significance of education: This positive correlation highlights the interplay between educational development and economic productivity.
 
 #### Limitations of the analysis: 
 
@@ -814,7 +826,7 @@ ggplot(Filter_data_2011, aes(x = `Literacy Rate`, y = `Sex Ratio`, color = State
   geom_point(size = 2) +  # Add points
   geom_text(aes(label = State), vjust = -0.5, size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +  # Add regression line
-  labs( title = "Relationship Between Sex Ratio and Literacy Rate", y = " Sex Ratio (‰)", x = "Literacy Rate (%)", color = "State") +
+  labs( title = "Relationship Between Sex Ratio and Literacy Rate", y = " Sex Ratio (F per thousand M)", x = "Literacy Rate (%)", color = "State") +
   scale_y_continuous(limits = c(min(Filter_data_2011$`Sex Ratio`) - 1, max(Filter_data_2011$`Sex Ratio`) + 1)) +  
   scale_x_continuous(limits = c(min(Filter_data_2011$`Literacy Rate`) - 1 , max(Filter_data_2011$`Literacy Rate`) + 1 )) +  #
   theme_minimal()  
@@ -823,8 +835,8 @@ While the hypothesis posited that higher literacy rates would be positively asso
 
 #### Inference Drawn from the graph:
 
-1.	Negative Correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, tend to have slightly lower sex ratios compared to other states.
-2.	Regional Variations: Odisha and Assam exhibit relatively higher sex ratios despite moderate literacy rates. States like Rajasthan and Punjab show low sex ratios alongside moderate literacy rates, indicating the influence of cultural and historical factors. For instance, Goli, Srinivas and Arora, Somya and Jain (2022), in their reserach _Patrilocality and Child Sex Ratios in India_ highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. ^[Goli, Srinivas and Arora, Somya and Jain, Neha, Patrilocality and Child Sex Ratios in India (February 10, 2022)]
+1.	Negative correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, tend to have slightly lower sex ratios compared to other states.
+2.	Regional variations: Odisha, Karnataka, and Assam demonstrate relatively higher sex ratios despite moderate literacy rates, whereas Punjab exhibits low sex ratios alongside similar literacy levels. This suggests the significant impact of cultural and historical factors. For instance, Goli, Srinivas and Arora, Somya and Jain (2022), in their reserach _Patrilocality and Child Sex Ratios in India_ highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. ^[Goli, Srinivas and Arora, Somya and Jain, Neha, Patrilocality and Child Sex Ratios in India (February 10, 2022)]
 
 #### Limitations of the analysis: 
 
@@ -940,10 +952,10 @@ In this Table, we analyze the correlation to determine the strength and directio
 1.	Correlation: Literacy Rate and Birth Rate exhibit a strong negative correlation (-0.889). This indicates that, in 2011, states with higher Literacy Rates tended to have significantly lower Birth Rates
 2.	Regression: The slope for Literacy Rate is negative and significant. The slope (-0.6398) indicates that for a 1% increase in Literacy Rate, the Birth Rate decreases by 0.6398 percentage points on average. The p-value of 0.01776 for the regression slope is less than 0.05, indicating that the relationship between Literacy Rate and Birth Rate is statistically significant. Finally, the R-squared value (0.7905) shows that 79.05% of the variation in Birth Rate is explained by Literacy Rate, highlighting the strong ability of the model to explain this variation.
 
-The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India. 
+The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India.
+---
 
-
-Moreover, these results seem to be generalizable for all States and Union Territories (UT) in India, as demonstrated by the graph  and regression table below: 
+Moreover, these results seem to be generalizable for all States in India, as demonstrated by the graph  and regression table below: 
 ```{r, fig.align="center"}
 #| message: false
 #| warning: false
@@ -972,7 +984,7 @@ ggplot(merged_data_2011_clean, aes(x = `Literacy Rate`, y = `Birth Rate`, color 
                                 max(merged_data_2011$`Literacy Rate`) + 3)) + 
   theme_minimal() + 
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5)  
+        plot.title = element_text(hjust = 0.5, size = 11)  
 )
 ```
 
@@ -1010,25 +1022,26 @@ These findings show that the negative relationship between Literacy Rate and Bir
 
 # IV) Conclusion
 
-In this report, We try to understand the comprehensive interplay between socio-demographic indicators and Net State Domestic Product (NSDP) across Indian states, uncovering critical insights into the regional disparities in economic and social development in 2011 and 2019.
+This report examined the interplay between socio-demographic indicators and Net State Domestic Product (NSDP) across Indian states, shedding light on regional disparities in economic and social development.
 
-In Block 1 hypothesis, we use 2019 data and analyse significant relationships between key indicators and economic performance. States with higher NSDP demonstrate robust fiscal capacity, enabling greater investment in health expenditure. This, in turn, is linked to improved outcomes such as lower infant mortality and death rates. However, its impact on mortality outcomes remains weak and statistically insignificant, underscoring the need for a broader, multivariate approach. We analyse on a state level, and observe higher NSDP is associated with greater health investments, as seen in states like Maharashtra. On a per-capita level, we observe that population effect becomes evident. Smaller states like Nagaland and Meghalaya demonstrate efficient resource utilization, achieving higher per-capita health expenditure despite limited fiscal resources. Conversely, larger states like Uttar Pradesh face challenges in translating economic output into substantial per-capita health investments, reflecting the importance of policy prioritization and efficient resource allocation.
+In Block 1, using 2019 data, we observed that states with higher NSDP allocate more resources to health expenditure. While higher health expenditure was linked to lower mortality rates, the relationship remained weak and statistically insignificant, highlighting the need for multivariate approaches. On a per-capita level, population effects became evident, with smaller states like Nagaland and Meghalaya achieving higher per-capita health expenditures despite limited fiscal resources, while larger states like Uttar Pradesh struggled to translate economic output into per-capita investments.
 
-In Block 2 hypothesis, we use 2011 data and observe a positive correlation between NSDP and literacy rates, suggesting that states with stronger economies tend to achieve higher educational outcomes. However, the relationship lacks statistical significance, indicating that factors beyond economic output—such as policy focus, infrastructure, and cultural dynamics—play a substantial role. Furthermore, literacy rates were hypothesized to influence demographic outcomes. The analysis supports a strong negative correlation between literacy rates and birth rates, emphasizing the transformative impact of education on family planning and population control. Conversely, the relationship between literacy rates and sex ratios reveals unexpected results, with a weak and negative association that underscores the enduring influence of cultural and historical factors in shaping gender dynamics in India. We also refer some research to back our reasoning for the same. 
+In Block 2, we use 2011 data and observe a positive correlation between NSDP and literacy rates, suggesting that states with stronger economies tend to achieve higher educational outcomes. However, the relationship lacks statistical significance, indicating that factors beyond economic output—such as policy focus, infrastructure, and cultural dynamics—play a substantial role. Furthermore, literacy rates were hypothesized to influence demographic outcomes. The analysis supports a strong negative correlation between literacy rates and birth rates, emphasizing the transformative impact of education on family planning and population control. Conversely, the relationship between literacy rates and sex ratios reveals unexpected results, with a weak and negative association that underscores the enduring influence of cultural and historical factors in shaping gender dynamics in India. We also refer some research to back our reasoning for the same. 
 
 While our findings provide valuable insights, the limitations of small sample size, univariate models, and the use of 2011 and 2019 data constrain the generalizability of conclusions. Expanding the dataset and incorporating multivariate analyses could enhance the robustness of these observations.
 
 Policy implications which can be derived from your analysis are:
 
-1.  Targeted Investment in Health: Continuing to invest in programs like Ayushman Bharat and enhanced funding for primary healthcare infrastructure could prioritize regions with high mortality rates and low fiscal capacity. Addressing regional disparities and population-driven challenges is also essential in achieving equitable health outcomes
+1.  Targeted Investment in Health: Expand programs like Ayushman Bharat and improve primary healthcare infrastructure, focusing on regions with high mortality rates and low fiscal capacity.
 
-2.  Strengthening Education Systems:  Policy programs like Samagra Shiksha Abhiyan can be expanded to address regional disparities in literacy rates and investment in quality education, including teacher training, infrastructure development, and technology integration, can help uplift regions with lower literacy rates.
+2.  Strengthening Education Systems: Enhance initiatives like Samagra Shiksha Abhiyan to address regional disparities in literacy through investments in teacher training, infrastructure, and technology.
 
-3. Promoting Gender Equity: Programs addressing cultural norms—like Beti Bachao Beti Padhao will help render a positive impact for the weak correlations between literacy rates and sex ratios in Block 2 Hypothesis.
+3. Promoting Gender Equity: Address cultural norms through programs like Beti Bachao Beti Padhao to improve the weak correlations between literacy and sex ratios.
 
-4. Monitoring and Data Collection: Prioritizing consistent data collection across all socio-demographic and economic indicators would enable more robust analysis and evidence-based decision-making. Collaborations with organizations like the Reserve Bank of India (RBI) and National Sample Survey Office (NSSO) for datasets ensure more reliable insights.
+4. Prioritize consistent data collection across socio-demographic and economic indicators to enable robust, evidence-based decision-making. Collaborate with organizations like the Reserve Bank of India (RBI) and National Sample Survey Office (NSSO) to ensure more reliable and comprehensive insights
 
-Thus, the report underscores the intricate relationship between socio-demographic indicators and economic performance across Indian states in year 2011 and 2019, revealing both progress and disparities. Addressing these disparities is vital for fostering inclusive development, as states with weaker socio-economic outcomes often require targeted interventions to unlock their potential. The findings emphasize the need of a multi-stakeholder collaboration, spanning across policymakers, educators, healthcare providers, and regional governments which is essential for translating these insights into effective policy action. By prioritizing investments in health, education, and gender equity, India can pave the way for sustainable growth and equitable development.
+In conclusion, this report highlights the intricate relationship between socio-demographic indicators and economic performance across Indian states in year 2011 and 2019, revealing both progress and disparities. 
+Addressing these disparities requires collaborative efforts among policymakers, educators, healthcare providers, and regional governments to implement effective interventions. By prioritizing investments in health, education, and gender equity, India can foster inclusive development, unlock regional potential, and pave the way for sustainable and equitable growth.
 
 ```{r, fig.align="center"}
 #| message: false
