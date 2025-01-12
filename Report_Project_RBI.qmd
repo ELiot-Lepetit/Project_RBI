@@ -948,9 +948,13 @@ These findings show that the negative relationship between Literacy Rate and Bir
 
 # IV) Conclusion
 
+In this report, We try to understand the comprehensive interplay between socio-demographic indicators and Net State Domestic Product (NSDP) across Indian states, uncovering critical insights into the regional disparities in economic and social development in 2011 and 2019.
 
+In Block 1 hypothesis, we use 2019 data and analyse significant relationships between key indicators and economic performance. States with higher NSDP demonstrate robust fiscal capacity, enabling greater investment in health expenditure. This, in turn, is linked to improved outcomes such as lower infant mortality and death rates. However, the analysis highlights clustering among states with low NSDP and health spending, underscoring the need for targeted interventions in underperforming regions.
 
----
+In Block 2 hypothesis, we use 2011 data and observe a positive correlation between NSDP and literacy rates, suggesting that states with stronger economies tend to achieve higher educational outcomes. However, the relationship lacks statistical significance, indicating that factors beyond economic output—such as policy focus, infrastructure, and cultural dynamics—play a substantial role. Furthermore, literacy rates were hypothesized to influence demographic outcomes. The analysis supports a strong negative correlation between literacy rates and birth rates, emphasizing the transformative impact of education on family planning and population control. Conversely, the relationship between literacy rates and sex ratios reveals unexpected results, with a weak and negative association that underscores the enduring influence of cultural and historical factors in shaping gender dynamics in India. We also refer some research to back our reasoning for the same. 
+
+While our findings provide valuable insights, the limitations of small sample size, univariate models, and the use of 2011 and 2019 data constrain the generalizability of conclusions. Expanding the dataset and incorporating multivariate analyses could enhance the robustness of these observations.
 
 ```{r, fig.align="center"}
 #| message: false
