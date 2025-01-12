@@ -44,6 +44,7 @@ Health_Exp_data <- read.csv(here("data", "State-wise_Public_Expenditure_on_Healt
 NSDP1_data <- read.csv(here("data", "Net_State_Domestic_Product_1.csv"))
 NSDP2_data <- read.csv(here("data", "Net_State_Domestic_Product_2.csv"))
 NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
+Pop_data_2019 <- read.csv(here("data", "state_wise_population__2019.csv"))
 }) 
 ```
 
@@ -94,7 +95,7 @@ To achieve these objectives, we rely on datasets that provide insights into both
 ## Data Sources
 1. [Handbook of Statistics on Indian States](https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook+of+Statistics+on+Indian+States)
 2. [Net State Domestic Product - State-wise (At Constant Prices)](https://www.rbi.org.in/Scripts/PublicationsView.aspx?id=22480)
- 
+3. [Indian population (by states) in 2019](https://www.kaggle.com/datasets/sureshraj256/india-state-population?resource=download)
 ---
 
 ### 1. Socio-Demographic Indicators
@@ -105,7 +106,7 @@ The socio-demographic data is sourced from the Handbook of Statistics on Indian 
 - Birth Rate: Number of live births per 1,000 people annually.
 - Death Rate: Number of deaths per 1,000 people annually.
 - Sex Ratio: Number of females per 1,000 males.
-- Total Population: Census-based state population projections.
+- Total Population: Census-based state population projections. 
 - Infant Mortality Rate (IMR): Infant deaths per 1,000 live births.
 - Total Fertility Rate (TFR): Average number of children per woman.
 - Life Expectancy: Average years a person is expected to live.
@@ -189,6 +190,11 @@ IMR_data <- IMR_data %>%
   slice(-c(38:41)) %>%
   rename(State = `State/Union Territory`) %>%
   mutate(across(-State, ~ as.numeric(gsub("\\*", "", .))))
+
+#population_data
+Pop_data_2019 <- Pop_data_2019 %>%
+  select(State, total_population) %>%
+  arrange(State)
 
 ```
 
@@ -285,6 +291,65 @@ merged_data <- reduce(long_datasets, full_join, by = c("State", "Year"))
 After merging all the datasets, we observed missing values across certain years, as not all demographic variables are consistently available for every year in the RBI datasets. To address this, we selected specific years for each hypothesis: **2019** for the first and **2011** for the second.
 
 
+```{r,, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
+
+### Adding the population variable
+
+merged_data_2019 <- merged_data %>%
+  filter(Year == 2019) %>%
+  filter(State != "ALL INDIA") %>%
+  mutate(mutate(across(-c(State, Year), as.numeric))) %>%
+  select(!c(`Literacy Rate`, `Sex Ratio`))
+
+merged_data_2019_clean <- merged_data_2019 %>%
+  filter(!is.na(`NSDP`), !is.na(`Health Expenditure`))  %>%
+  filter(!State %in% c("Arunachal Pradesh")) %>%
+  arrange(State)
+
+Filter_data_2019 <- merged_data_2019_clean %>%
+  filter(State %in% c("Maharashtra", "Karnataka","Odisha", "Punjab", "Rajasthan", "Assam")) %>%
+  filter(Year == 2019) 
+
+# Select specific columns for the hypothesis
+Filter_data_2019 <- Filter_data_2019 %>% select(State, Year, NSDP, `Health Expenditure`, Population, `Death Rate`,`Infant Mortality Rate`)
+
+# Check the structure of the dataset
+str(Filter_data_2019)
+
+# Convert the observations to numeric 
+Filter_data_2019 <- Filter_data_2019 |> 
+  mutate(
+    NSDP = as.numeric(NSDP), 
+    `Health Expenditure` = as.numeric(`Health Expenditure`), 
+    `Death Rate` = as.numeric(`Death Rate`),
+    `Infant Mortality Rate` = as.numeric(`Infant Mortality Rate`)
+  )
+
+# Preparing the add of the population variable by merging
+Pop_data_2019 <- Pop_data_2019 %>%
+  filter(!State %in% c("ANDAMAN & NICOBAR ISLANDS", "CHANDIGARH", "DNH", "TAMIL NADU")) %>%
+  arrange(State)
+
+# Merging
+merged_data_2019_clean <- merged_data_2019_clean %>%
+  mutate(Population = Pop_data_2019$total_population) %>%
+  filter(State != "Himachal Pradesh") #remove outlier 
+
+#Creating a "health expenditure PER CAPITA" variable 
+
+merged_data_2019_clean <- merged_data_2019_clean %>%
+mutate(`Health Expenditure Per Capita` = (`Health Expenditure` * 1e7 / Population)) # Convert ₹ crore to ₹ (Indian Rupees)
+
+
+# Creatin a "NSDP per capita" variable
+merged_data_2019_clean <- merged_data_2019_clean %>%
+mutate(`NSDP Per Capita` = (NSDP * 1e7 / Population)) # Convert ₹ crore to ₹ (Indian Rupees)
+
+```
+
 <div style="display: flex; justify-content: space-between;">
 
 <div style="width: 48%;">
@@ -293,13 +358,14 @@ After merging all the datasets, we observed missing values across certain years,
 #| message: false
 #| warning: false
 #| echo: false
-table_2019 <- merged_data %>%
-  filter(State != "ALL INDIA") %>%
-  filter(Year == 2019) %>%
-  select(State, Year, NSDP, `Health Expenditure`, `Death Rate`, `Birth Rate`, `Infant Mortality Rate`) %>%
-  head(5)
+table_2019 <- merged_data_2019_clean %>%
+  select(-c(`Birth Rate`, `Total Fertility Rate`)) %>% 
+  filter(State != "Chhattisgarh") %>%
+  head(5) %>% 
+  mutate(`Health Expenditure Per Capita` = round(`Health Expenditure Per Capita`, 1))
 
 knitr::kable(table_2019, caption = "Data for Hypothesis 1", align = "c")
+
 ```
 </div> <div style="width: 48%;">
 
@@ -319,7 +385,137 @@ knitr::kable(table_2011, caption = "Data for Hypothesis 2", align = "c")
 
 
 # III) Analysis
+
+## Hypothesis 1 Analysis
+1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
+   
+   1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
+
+
+To evaluate this hypothesis, we performed two analyses: 
+
+- one using state-level aggregated values 
+
+- and the other using per capita values. 
+
+This approach captures both the overall resource allocation (state values) and the individual fiscal capacity (per capita values).
+
+### State-level analysis
+
+#### Generating a ggplot 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggrepel) 
+ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = State)) +
+  geom_point(size = 1) +
+  geom_text_repel(aes(label = State), size = 3) +  
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) + 
+  labs(
+    title = "Relationship Between NSDP and Health Expenditure",
+    x = "NSDP (Rupees in Crores)",
+    y = "Health Expenditure (in Crores)"
+  ) +
+  theme_minimal() + 
+    theme(legend.position = "none")
+```
+
+#### Inference Drawn from the graph:
+1.	Positive Correlation: The graph demonstrates a positive relationship between NSDP and Health Expenditure. States with higher NSDP allocate more resources toward health.
+2. Inferences about policy choices: Maharashtra stands out with both high NSDP and Health Expenditure, reflecting its strong fiscal capacity. Uttar Pradesh, however, has a relatively high Health Expenditure compared to its NSDP, suggesting that the state prioritizes health spending despite its lower economic capacity. This could indicate a deliberate policy focus on healthcare
+3.	Clustering: Most states are clustered in the lower NSDP and Health Expenditure range, indicating limited fiscal capacity and health spending for the majority of states. These States (or Union Territories) may require targeted support to improve health expenditure despite their lower fiscal capacity.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# Compute correlation
+correlation <- cor(merged_data_2019_clean$NSDP, merged_data_2019_clean$`Health Expenditure`)
+
+# Fit the linear regression model
+model1 <- lm(`Health Expenditure` ~ NSDP, data = merged_data_2019_clean)
+summary_model <- summary(model1)
+
+# Extract key statistics from the regression
+results_table <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope (NSDP)", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation, 3),                                
+    round(summary_model$coefficients[1, 1], 3),           
+    round(summary_model$coefficients[2, 1], 6),           
+    round(summary_model$r.squared, 3),                    
+    round(summary_model$adj.r.squared, 3),                
+    round(summary_model$coefficients[2, 4], 3)           
+  )
+)
+
+kable(results_table, caption = "Summary of Correlation and Linear Regression Results")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  
+  row_spec(0, align = "c")                                   
+```
+In this table, we examine the correlation and linear regression results to explore the relationship between NSDP (Net State Domestic Product) and Health Expenditure. 
+
+#### Conclusion:
+1.	Correlation: NSDP and Health Expenditure exhibit a strong positive correlation, with a coefficient of 0.854, indicating that states with higher NSDP tend to spend more on health.
+2.	The analysis reveals that 73% of the variation in Health Expenditure is explained by NSDP (R-squared = 0.73), with a statistically significant relationship (p-value < 0.001), indicating that states with higher NSDP allocate more resources to health, although the modest slope (0.0101) suggests gradual increases in spending.
+
+Thus, the state-level analysis highlights that states with higher NSDP are significantly more likely to allocate greater resources toward health. 
+
+
+#### Limitations
+1.  The analysis does not consider critical factors, such as state policies, healthcare infrastructure, or socio-economic disparities, which may also significantly impact health expenditure.
+2.  The relationship is analyzed at the state level, which overlooks significant variations within states, such as **differences in population size** and resource allocation across regions. 
+
+These limitations highlight the need for a per capita analysis, offering a more nuanced view of health expenditure relative to individual fiscal capacity and well-being.
+
+---
+
+### Per-capita analysis
+
+
+
+
+
+---
+
+## Hypothesis 2 Analysis
+2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
+  
+   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
+  
+   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
+
+
+```{r,, results='hide'}
+#| message: false
+#| warning: false
+#| echo: false
+merged_data_2019 <- merged_data %>%
+  filter(Year == 2019) %>%
+  filter(State != "ALL INDIA") %>%
+  mutate(mutate(across(-c(State, Year), as.numeric)))
+
+merged_data_2019_clean <- merged_data_2019 %>%
+  filter(!is.na(`NSDP`), !is.na(`Health Expenditure`))  %>%
+  filter(!State %in% c("Arunachal Pradesh")) %>%
+  arrange(State)
+
+# Preparing the add of the population variable by merging
+Pop_data_2019 <- Pop_data_2019 %>%
+  filter(!State %in% c("ANDAMAN & NICOBAR ISLANDS", "CHANDIGARH", "DNH", "TAMIL NADU")) %>%
+  arrange(State)
+
+# Merging
+merged_data_2019_clean <- merged_data_2019_clean %>%
+  mutate(Population = Pop_data_2019$total_population)
+```
+
 To work around this hypothesis, we have carefully selected six states representing different geographic directions of India. These states — Maharashtra (Central), Karnataka (South), Odisha (East), Punjab (North), Rajasthan (North-west), and Assam (North-east) were chosen to capture the cultural, economic, and regional variations that define India’s complexity. By incorporating states from distinct regions, this analysis aims to provide a holistic overview of how factors such as literacy rates, economic output, and demographic indicators vary across the nation’s vast and heterogeneous landscape.
+
 ```{r,, results='hide'}
 #| message: false
 #| warning: false
@@ -331,57 +527,6 @@ selected_states <- c("Maharashtra", "Karnataka","Odisha", "Punjab", "Rajasthan",
 Filter_data <- merged_data |> filter(State %in% selected_states) %>%
   filter(!is.na(NSDP))
 ```
-## Hypothesis 1 Analysis
-1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
-   
-   1.1. Higher health expenditure is associated with lower infant mortality rates and lower death rates.
-
-```{r,, results='hide'}
-#| message: false
-#| warning: false
-#| echo: false
-Filter_data_2019 <- Filter_data %>%
-  filter(Year == 2019) 
-
-# Select specific columns for the hypothesis
-Filter_data_2019 <- Filter_data_2019 %>% select(State, Year, NSDP, `Health Expenditure`, `Death Rate`, `Infant Mortality Rate`)
-
-# Check the structure of the dataset
-str(Filter_data_2019)
-
-# Convert the observations to numeric 
-Filter_data_2019 <- Filter_data_2019 |> 
-  mutate(NSDP = as.numeric(NSDP), `Health Expenditure` = as.numeric(`Health Expenditure`), `Death Rate` = as.numeric(`Death Rate`),`Infant Mortality Rate` = as.numeric(`Infant Mortality Rate`) )
-
-str(Filter_data_2019)
-```
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-# Display the table
-kable(Filter_data_2019, caption = "Table: Selected States from Filtered Data (2019)")  %>%
-  kable_styling(position = "center", full_width = FALSE) %>%  
-  row_spec(0, align = "c")                                  
-```
-
-
-
-
-
-
-
-
-
-
-
-## Hypothesis 2 Analysis
-2. States with higher NSDP tend to have higher literacy rates. Literacy is used as a proxy for education in this analysis.
-  
-   2.1. Higher literacy rates are positively associated with improved sex ratios due to greater gender awareness and access to education.
-  
-   2.2. Higher literacy rates are positively associated with lower birth rates due to urbanization, education, and access to family planning.
 
 ```{r,, results='hide'}
 #| message: false
@@ -679,7 +824,7 @@ results_table_birth_rate2 <- data.frame(
   )
 )
 
-kable(results_table_birth_rate2, caption = "Summary of Correlation and Linear Regression Results for Birth Rate and Literacy Rate")  %>%
+kable(results_table_birth_rate2, caption = "Summary of Regression Results for Birth Rate and Literacy Rate Across All States and Union Territories")  %>%
   kable_styling(position = "center", full_width = FALSE) %>%  # Center the table
   row_spec(0, align = "c")
 ```
