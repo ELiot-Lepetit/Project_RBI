@@ -419,7 +419,7 @@ ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = S
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
   ) +
-  scale_size_continuous(range = c(1, 8)) +  
+  scale_size_continuous(range = c(1, 5)) +  
   theme_minimal() +
   guides(color = "none") +  
   theme(
@@ -497,7 +497,7 @@ ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditur
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
   ) +
-  scale_size_continuous(range = c(1, 8)) +  
+  scale_size_continuous(range = c(1, 5)) +  
   theme_minimal() +
   guides(color = "none") +  
   theme(
@@ -560,8 +560,8 @@ Hypothesis 1.1. Higher health expenditure is associated with lower infant mortal
 
 # Health Expenditure Per Capita vs Infant Mortality Rate
 ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Infant Mortality Rate`, color = State)) +
-  geom_point(color = "blue", alpha = 0.7) +
-    geom_text_repel(aes(label = State), size = 3) +  
+  geom_point() +
+    geom_text_repel(aes(label = State), size = 2) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
   labs(
     title = "Relationship Between Health Expenditure and Infant Mortality Rate",
@@ -573,8 +573,8 @@ ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Inf
 
 # Health Expenditure Per Capita vs Death Rate
 ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Death Rate`, color = State)) +
-  geom_point(color = "darkgreen", alpha = 0.7) +
-    geom_text_repel(aes(label = State), size = 3) +  
+  geom_point() +
+    geom_text_repel(aes(label = State), size = 2.2) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
   labs(
     title = "Relationship Between Health Expenditure and Death Rate",
@@ -586,12 +586,74 @@ ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Dea
 ```
 
 
-#### Inference Drawn from the graph:
+#### Inference Drawn from the graphs:
 1.	Negative Correlations: The regression lines indicate a slight negative relationship in both cases.
-2.  Weak Relationahsip: States with similar levels of health expenditure per capita display significant variation in death rates. This indicates that factors such as healthcare quality, public health policies, and demographic characteristics may heavily influence death rates, making it difficult to draw strong conclusions from expenditure levels alone.
+2.  Weak Relationhsip: States with similar levels of health expenditure per capita display significant variation in death rates. This indicates that factors such as healthcare quality, public health policies, and demographic characteristics may heavily influence death rates, making it difficult to draw strong conclusions from expenditure levels alone.
 
 
+We will now test for the correlation and regression:
 
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+
+# First Table: Health Expenditure & Infant Mortality Rate Analysis
+correlation1 <- cor(merged_data_2019_clean$`Health Expenditure Per Capita`, merged_data_2019_clean$`Infant Mortality Rate`)
+
+model1 <- lm(`Infant Mortality Rate` ~ `Health Expenditure Per Capita`, data = merged_data_2019_clean)
+summary_model1 <- summary(model1)
+
+results_table1 <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation1, 3),
+    round(summary_model1$coefficients[1, 1], 3),
+    round(summary_model1$coefficients[2, 1], 6),
+    round(summary_model1$r.squared, 3),
+    round(summary_model1$adj.r.squared, 3),
+    round(summary_model1$coefficients[2, 4], 3)
+  )
+)
+
+# Second Table: Health Expenditure & Death Rate Analysis
+correlation2 <- cor(merged_data_2019_clean$`Health Expenditure Per Capita`, merged_data_2019_clean$`Death Rate`)
+
+model2 <- lm(`Death Rate` ~ `Health Expenditure Per Capita`, data = merged_data_2019_clean)
+summary_model1 <- summary(model1)
+
+results_table2 <- data.frame(
+  Statistic = c("Correlation Coefficient", "Intercept", "Slope", "R-squared", "Adjusted R-squared", "p-value"),
+  Value = c(
+    round(correlation1, 3),
+    round(summary_model1$coefficients[1, 1], 3),
+    round(summary_model1$coefficients[2, 1], 6),
+    round(summary_model1$r.squared, 3),
+    round(summary_model1$adj.r.squared, 3),
+    round(summary_model1$coefficients[2, 4], 3)
+  )
+)
+
+kable(results_table1, caption = "Overview of Correlation and Linear Regression Findings for the 'Infant Mortality Rate Analysis")  %>%
+  kable_styling(position = "center", full_width = FALSE) %>%  
+  row_spec(0, align = "c")        
+
+
+kable(results_table2, caption = "Overview of Correlation and Linear Regression Findings for the Health Expenditure and Death Rate Analysis"  
+) %>%
+  kable_styling(position = "center", full_width = FALSE) %>%
+  row_spec(0, align = "c")
+```
+In these tables, we examine the correlation and linear regression results to explore the relationship between Health Expenditure with Infant Mortality Rate and Death Rate. 
+
+#### Conclusion:
+1.	While there is a slight negative relationship between health expenditure per capita and mortality metrics, the relationship is too weak and statistically insignificant to draw strong or even any conclusions.
+2.	Other factors, such as healthcare quality, public health policies, demographic characteristics, or disease prevalence, likely have a much larger impact on mortality outcomes.
+
+#### Limitations
+1.  Weak Predictive Power and Statistical Insignificance: the very low R-squared values and high p-values show that health expenditure per capita has little to no impact on these outcomes. This suggests the need to investigate additional factors, such as healthcare access, literacy rates, or disease burden, that might better explain the variations in mortality.
+2.  Scale of analysis: the analysis is conducted at the state level, which overlooks regional and intra-state variations. Differences in healthcare infrastructure, population density, and resource allocation within states could obscure the true relationship
 
 
 --- 
