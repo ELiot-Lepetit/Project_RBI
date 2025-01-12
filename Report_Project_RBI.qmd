@@ -405,7 +405,7 @@ This approach captures both the overall resource allocation (state values) and t
 
 #### Generating a ggplot 
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -414,7 +414,7 @@ ggplot(merged_data_2019_clean, aes(x = NSDP, y = `Health Expenditure`, color = S
   geom_text_repel(aes(label = State), size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  
   labs(
-    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    title = "Relationship Between NSDP and Health Expenditure\n(per capita)",
     x = "NSDP per capita",
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
@@ -483,7 +483,7 @@ These limitations highlight the need for a per capita analysis, offering a more 
 
 #### Generating a ggplot 
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -492,7 +492,7 @@ ggplot(merged_data_2019_clean, aes(x = `NSDP Per Capita`, y = `Health Expenditur
   geom_text_repel(aes(label = State), size = 3) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE, show.legend = FALSE) +  # Remove line from legend
   labs(
-    title = "Relationship Between NSDP and Health Expenditure (per capita)",
+    title = "Relationship Between NSDP and Health Expenditure\n(per capita)",
     x = "NSDP per capita",
     y = "Health Expenditure (per capita)",
     size = "Population (in millions)"  
@@ -553,7 +553,7 @@ Hypothesis 1.1. Higher health expenditure is associated with lower infant mortal
 
 #### Generating ggplots for our two assumptions
 
-```{r}
+```{r, fig.align="center"}
 #| message: false
 #| warning: false
 #| echo: false
@@ -564,7 +564,7 @@ ggplot(merged_data_2019_clean, aes(x = `Health Expenditure Per Capita`, y = `Inf
     geom_text_repel(aes(label = State), size = 2) +  
   geom_smooth(method = "lm", formula = y ~ x, color = "red", se = FALSE) +
   labs(
-    title = "Relationship Between Health Expenditure and Infant Mortality Rate",
+    title = "Relationship Between Health Expenditure and\nInfant Mortality Rate",
     x = "Health Expenditure Per Capita",
     y = "Infant Mortality Rate"
   ) +
@@ -824,7 +824,7 @@ While the hypothesis posited that higher literacy rates would be positively asso
 #### Inference Drawn from the graph:
 
 1.	Negative Correlation: Contrary to the hypothesis, the graph displays a negative slope, suggesting that states with higher literacy rates, tend to have slightly lower sex ratios compared to other states.
-2.	Regional Variations: Odisha and Assam exhibit relatively higher sex ratios despite moderate literacy rates. States like Rajasthan and Punjab show low sex ratios alongside moderate literacy rates, indicating the influence of cultural and historical factors. This highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. It is possible that if we look at the present data, results we see could be different. For instance, Sarkar, P., & Das, A. (2020), in their reserach _Gender Equality and Education in India: Exploring Regional Differences_ ^[Sarkar, P., & Das, A. (2020). Gender Equality and Education in India: Exploring Regional Differences. Social Indicators Research. DOI: 10.1007/s11205-020-02309-w.].
+2.	Regional Variations: Odisha and Assam exhibit relatively higher sex ratios despite moderate literacy rates. States like Rajasthan and Punjab show low sex ratios alongside moderate literacy rates, indicating the influence of cultural and historical factors. For instance, Goli, Srinivas and Arora, Somya and Jain (2022), in their reserach _Patrilocality and Child Sex Ratios in India_ highlights the regional disparities and a lingering reason in historical male child preference in northern states, which has often led to skewed sex ratios due to practices like prenatal gender selection. ^[Goli, Srinivas and Arora, Somya and Jain, Neha, Patrilocality and Child Sex Ratios in India (February 10, 2022)]
 
 #### Limitations of the analysis: 
 
