@@ -47,26 +47,16 @@ NSDP3_data <- read.csv(here("data", "Net_State_Domestic_Product_3.csv"))
 }) 
 ```
 
-```{r, fig.align="center"}
-#| message: false
-#| warning: false
-#| echo: false
-# Read the Quarto file
-text <- readLines("Project_RBI.qmd")
-
-# Count words
-word_count <- sum(sapply(strsplit(text, "\\s+"), length))
-```
 
 # I) Research Question
 India’s diversity in economic and social conditions makes it an ideal case for studying the interplay between economic and demographic factors. High-performing states benefit from robust health and education systems, while underperforming states struggle due to insufficient investments in human capital. Moreover, understanding the impact of cultural and geographic differences adds a unique layer to the analysis. For instance, northeastern states may face challenges due to geographic isolation, while southern states may excel due to better health and education policies. Hence, our project aims to investigate the intricate relationship between socio-demographic indicators and economic performance at the state level in India.
 
 **How do socio-demographic indicators, such as literacy rate, health expenditure, and birth rate, interact with the Net State Domestic Product (NSDP) across Indian states, and how do these interactions explain regional disparities in economic and social development?:**
 
-To address this research question, we propose two sets of hypotheses which aim to uncover key drivers of regional disparities and shed light on the connections between economic performance and social development across Indian states.
+To address this research question, we propose two sets of hypothesis which aim to uncover key drivers of regional disparities and shed light on the connections between economic performance and social development across Indian states.
 
 
-## Hypotheses
+## Hypothesis
 
 #### Block 1: Health Expenditure and NSDP
 1. States with higher NSDP allocate greater health expenditure per capita due to higher fiscal capacity.
@@ -309,7 +299,7 @@ table_2019 <- merged_data %>%
   select(State, Year, NSDP, `Health Expenditure`, `Death Rate`, `Birth Rate`, `Infant Mortality Rate`) %>%
   head(5)
 
-knitr::kable(table_2019, caption = "Data for Hypothese 1", align = "c")
+knitr::kable(table_2019, caption = "Data for Hypothesis 1", align = "c")
 ```
 </div> <div style="width: 48%;">
 
@@ -322,7 +312,7 @@ table_2011 <- merged_data %>%
   select(State, Year, NSDP, `Literacy Rate`, `Birth Rate`, `Sex Ratio`, `Death Rate`, `Infant Mortality Rate`) %>%
   head(5)
 
-knitr::kable(table_2011, caption = "Data for Hypothese 2", align = "c")
+knitr::kable(table_2011, caption = "Data for Hypothesis 2", align = "c")
 ```
 
 </div> </div>
@@ -593,4 +583,29 @@ In this Table, we analyze the correlation to determine the strength and directio
 
 The analysis confirms the hypothesis that higher Literacy Rates are associated with lower Birth Rates. This suggests that education plays a crucial role in family planning, urbanization, and access to reproductive health services, which collectively lead to a decline in Birth Rates. The negative slope and statistically significant results support the idea that states with better educational outcomes tend to have lower fertility rates. Therefore, Education is an important tool for improving socio-economic outcomes and controlling population growth. However, expanding the analysis to include additional variables and a larger dataset would provide a more comprehensive understanding of the factors influencing the Birth Rate in India. 
 
-^[The no of words in the report are `r word_count`.]
+
+
+# IV) Conclusion
+
+
+
+
+---
+
+```{r, fig.align="center"}
+#| message: false
+#| warning: false
+#| echo: false
+text <- readLines("Report_Project_RBI.qmd")
+
+# Identify code chunk boundaries
+in_chunk <- grepl("^```", text)
+chunk_flag <- cumsum(in_chunk) %% 2 == 1
+
+# Keep only lines outside of code chunks
+text_filtered <- text[!chunk_flag]
+
+# Count words in the remaining lines
+word_count <- sum(sapply(strsplit(text_filtered, "\\s+"), length))
+```
+The number of words in the report is `r word_count`.^[To count the words, we excluded all words that are part of the code (inside code chunks). Hence, the word count does not include words within tables, graphs, or any other elements generated through code.]
