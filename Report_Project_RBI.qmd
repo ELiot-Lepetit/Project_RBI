@@ -984,4 +984,6 @@ text_filtered <- text[!chunk_flag]
 # Count words in the remaining lines
 word_count <- sum(sapply(strsplit(text_filtered, "\\s+"), length))
 ```
-The number of words in the report is `r word_count`.^[To count the words, we excluded all words that are part of the code (inside code chunks). Hence, the word count does not include words within tables, graphs, or any other elements generated through code.]
+# V) Acknowledgments
+We extend our sincere gratitude to Mr. Fabrice Rossi, whose guidance and insights throughout the lectures were invaluable in shaping this project, and it provided a strong foundation for conducting this analysis and crafting meaningful conclusions. We also wish to thank the Reserve Bank of India (RBI) for providing access to the comprehensive datasets used in this study. The availability of such detailed and reliable data was instrumental in facilitating our research on socio-demographic and economic indicators across Indian states.^[The number of words in the report is `r word_count`.{To count the words, we excluded all words that are part of the code (inside code chunks). Hence, the word count does not include words within tables, graphs, or any other elements generated through code.}]
+--- 
